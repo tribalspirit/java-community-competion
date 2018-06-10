@@ -3,6 +3,7 @@ package com.epam.coderunner.runners;
 import com.epam.coderunner.Status;
 import com.epam.coderunner.model.TestingStatus;
 import com.epam.coderunner.storage.TasksStorage;
+import com.google.common.annotations.VisibleForTesting;
 import org.joor.Reflect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,8 @@ public class JavaCodeRunner {
 
     public String runCode(String className, String source, Map<String, String> inputOutputs) {
         try {
+            Object obj = Reflect.compile(className, source).create().get();
+            LOG.debug("Source code has type of {}", obj.getClass());
             Function<String, String> function = Reflect.compile(className, source).create().get();
             String submissionId = "" + System.currentTimeMillis();
 
@@ -65,5 +68,10 @@ public class JavaCodeRunner {
         } catch (Throwable th){
             LOG.error("Error while checking submission {}", submissionId, th);
         }
+    }
+
+    @VisibleForTesting
+    public void setTasksStorage(TasksStorage tasksStorage) {
+        this.tasksStorage = tasksStorage;
     }
 }

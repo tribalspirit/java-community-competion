@@ -1,6 +1,7 @@
 package com.epam.coderunner.controllers;
 
 import com.epam.coderunner.model.Task;
+import com.epam.coderunner.model.TaskRequest;
 import com.epam.coderunner.runners.JavaCodeRunner;
 import com.epam.coderunner.storage.TasksStorage;
 import org.slf4j.Logger;
@@ -32,10 +33,10 @@ public class FileUploadController {
     }
 
     @PostMapping("/task/{taskId}")
-    public @ResponseBody String handleFileUpload(@PathVariable String taskId, @RequestBody String code) throws IOException {
+    public @ResponseBody String handleFileUpload(@PathVariable String taskId, @RequestBody TaskRequest code) throws IOException {
             Task task = tasksStorage.getTask(taskId);
-            LOG.debug("Running code {}", code);
-            return runner.runCode("Solution" + taskId, code, task.getAcceptanceTests());
+            LOG.debug("Running code {}", code.getSource());
+            return runner.runCode("Solution" + taskId, code.getSource(), task.getAcceptanceTests());
     }
 
 }
