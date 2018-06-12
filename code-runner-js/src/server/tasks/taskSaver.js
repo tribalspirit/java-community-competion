@@ -11,4 +11,4 @@ client.on('error', function (err) {
 
 client.set('task:1', JSON.stringify(task1));
 
-console.log(client.get("task:1"));
+client.get("task:1", (err, reply) => console.log(reply));

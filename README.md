@@ -1,3 +1,54 @@
 # java-community-competion
 
-https://github-production-release-asset-2e65be.s3.amazonaws.com/3402186/bb1d10fc-3fac-11e6-8dc7-a51af1d6f36f?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20180610%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20180610T063915Z&X-Amz-Expires=300&X-Amz-Signature=56d7b8032b9de4b9055e34541044fa8e53e9605e0e233b36f0637c153273d40b&X-Amz-SignedHeaders=host&actor_id=4011890&response-content-disposition=attachment%3B%20filename%3DRedis-x64-3.2.100.msi&response-content-type=application%2Foctet-stream
+## Required environment
+
+- Install JDK(>=8), Node.JS (>=8), Redis(>=3)
+
+Redis for Windows can be download [here](https://github.com/MicrosoftArchive/redis/releases)
+
+Recommend IntelliJ Ultimate as IDE - allows you edit JS and java code.
+
+## Installing dependencies 
+
+for code-runner, run ```mvn clean install``` or let IntellJ do the stuff automatically.
+Note that I added AliYun mvn repo in pom.xml - may be you want to comment it out.
+
+for code-runner-js - go to that folder and run ```npm install```
+or right click on package.json - run npm install 
+
+
+additionally JS project need nodemon available globally. Install it in console with:
+```
+npm install -g nodemon
+```
+
+## Importing task data to redis
+
+Once redis is running, use node.js to import tasks data: 
+
+```
+cd code-runner-js/src/server/tasks
+node taskSaver.js
+```
+
+Or in IntelliJ, right click on taskSaver.js - run "taskSaver"
+
+
+## Starting java service
+
+Start CodeRunnerApplication
+
+## Starting JS part
+
+```
+cd code-runner-js
+npm start
+```
+
+Or setup Npm Run configuration in Intellij. 
+
+
+
+Once started, UI is available on localhost:5000
+You can try to submit the code from code-runner/src/test/resources/Solution1.java
+
