@@ -1,7 +1,7 @@
 import React, {Component} from "react"
 
 
-class App extends React.Component {
+export default class extends React.Component {
 
     constructor(props) {
         super(props);
@@ -15,6 +15,7 @@ class App extends React.Component {
         return (
             <form onSubmit={this.onFormSubmit}>
                 <h1>File Upload</h1>
+                <div>Current location: {JSON.stringify(this.props.location)}</div>
                 <input type="file" onChange={this.onChange} />
                 <button type="submit">Upload</button>
             </form>

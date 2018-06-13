@@ -24,6 +24,7 @@ class TaskPage extends React.Component {
             return (
                 <div>
                     <div>{task.title}</div>
+                    <div>Current location: {JSON.stringify(this.props.location)}</div>
                     <form onSubmit={this.onFormSubmit}>
                         <h1>File Upload</h1>
                         <input type="file" onChange={this.onChange}/>

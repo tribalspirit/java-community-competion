@@ -10,8 +10,9 @@ module.exports = function(environment, options) {
     return {
         entry: './src/client/app.js',
         output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: 'bundle.js'
+            path: path.resolve(__dirname, 'dist/public'),
+            filename: 'bundle.js',
+            publicPath: '/public/'
         },
         devtool: isProduction ? 'none' : 'source-map',
         mode: env,
@@ -38,7 +39,7 @@ module.exports = function(environment, options) {
         },
         plugins: [
             new HtmlWebpackPlugin({
-                title: 'Netflix Roulette',
+                title: 'Competition',
                 hash: true,
                 template: './src/client/index.html'
             }),
