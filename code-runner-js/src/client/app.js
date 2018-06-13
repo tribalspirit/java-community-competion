@@ -4,6 +4,7 @@ import axios, { post } from 'axios';
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import TasksList from './components/TasksList';
 import TaskPage from './components/TaskPage';
+import ResultDashboard from './components/ResultsDashboard';
 
 const App = () => (
     <div>
@@ -16,6 +17,7 @@ const Main = () => (
         <Switch>
             <Route exact path='/' component={TasksList}/>
             <Route exact path='/task/:taskId' component={TaskPage}/>
+            <Route exact path='/dashboard' component={ResultDashboard}/>
         </Switch>
     </main>
 );

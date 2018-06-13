@@ -14,12 +14,16 @@ export default class extends Component {
 
     render(){
         return (
-            <ul>
-                <div>Current location: {this.props.location.path}</div>
+            <div>
+                <ul>
+                    <div>Current location: {this.props.location.path}</div>
 
-                <li><Link to="/task/1">Task1</Link></li>
-                <li><Link to="/task/2">Task2</Link></li>
-            </ul>
+                    <li><Link to="/task/1">Task1</Link></li>
+                    <li><Link to="/task/2">Task2</Link></li>
+                </ul>
+                <div><Link to="/dashboard">Dashboard</Link></div>
+            </div>
+
         )
     }
 }
