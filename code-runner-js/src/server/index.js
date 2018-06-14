@@ -2,7 +2,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const axios = require('axios');
 
-const cookeParser =  require('cookie-parser');
+const cookieParser =  require('cookie-parser');
 const bodyParser =  require('body-parser') ;
 const expressValidator =  require('express-validator') ;
 const session =  require('express-session') ;
@@ -14,9 +14,13 @@ app.use(fileUpload());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookeParser());
-
-app.use(session({ secret: 'java-and-js-are-friends-forever:D', resave: false, saveUninitialized: true, }));
+app.use(cookieParser());
+app.use(session({
+    secret: 'java-and-js-are-friends-forever:D',
+    resave: false,
+    saveUninitialized: true,
+    // cookie: { secure: true }
+}));
 
 app.use(expressValidator());
 
@@ -24,7 +28,32 @@ app.use(expressValidator());
 app.use('/public', express.static(__dirname + './../../dist/public'));
 
 
-app.get('*', (req, res) => {
+let isAuthenticated = (req, res, next) => {
+    console.log(req.session);
+    if(req.session.userId){
+        return next();
+    } else {
+        console.log('Not Authenticated');
+        res.redirect('/login');
+    }
+};
+
+app.post('/api/login', (req, res) => {
+    if(req.body.email){
+        console.log('auth as ', req.body.email);
+        req.session.userId=req.body.email;
+        console.log(req.session);
+        req.session.save();
+    } else {
+        console.log('No email provided')
+    }
+});
+
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname + './../../dist/public/login.html'));
+});
+app.get('*', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname + './../../dist/public/index.html'));
 });
 

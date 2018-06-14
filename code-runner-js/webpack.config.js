@@ -8,10 +8,13 @@ module.exports = function(environment, options) {
     const isProduction = env === 'production';
 
     return {
-        entry: './src/client/app.js',
+        entry: {
+            app: './src/client/app.js',
+            login: './src/client/login.js'
+        },
         output: {
             path: path.resolve(__dirname, 'dist/public'),
-            filename: 'bundle.js',
+            filename: '[name].bundle.js',
             publicPath: '/public/'
         },
         devtool: isProduction ? 'none' : 'source-map',
@@ -41,7 +44,16 @@ module.exports = function(environment, options) {
             new HtmlWebpackPlugin({
                 title: 'Competition',
                 hash: true,
-                template: './src/client/index.html'
+                template: './src/client/index.html',
+                chunks: ['app'],
+                filename: './index.html'
+            }),
+            new HtmlWebpackPlugin({
+                title: 'Login Page',
+                hash: true,
+                template: './src/client/login.html',
+                chunks: ['login'],
+                filename: './login.html'
             }),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output

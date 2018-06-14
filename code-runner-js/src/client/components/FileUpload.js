@@ -1,4 +1,5 @@
 import React, {Component} from "react"
+import axios, { post } from 'axios';
 
 class SimpleReactFileUpload extends React.Component {
 

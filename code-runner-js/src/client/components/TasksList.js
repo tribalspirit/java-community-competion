@@ -1,5 +1,6 @@
 import React, {Component} from "react"
 import { Link } from "react-router-dom";
+import axios from 'axios';
 
 
 export default class extends Component {
@@ -7,8 +8,15 @@ export default class extends Component {
     constructor(props){
         super(props);
         this.state = {
-
+            tasks: []
         }
+    }
+
+    componentDidMount(){
+        axios.get('/api/tasks')
+            .then(res => {
+                console.log(res);
+            })
     }
 
 
