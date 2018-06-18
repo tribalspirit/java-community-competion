@@ -19,7 +19,7 @@ const Main = () => (
             <Route exact path='/' component={TasksList}/>
             <Route exact path='/task/:taskId' component={TaskPage}/>
             <Route exact path='/dashboard' component={ResultDashboard}/>
-            <Route exact path='/login' component={LoginPage}/>
+            <Route exact path='/login' render={ props => <LoginPage {...props} />} />
         </Switch>
     </main>
 );
