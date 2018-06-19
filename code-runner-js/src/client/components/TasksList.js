@@ -1,15 +1,11 @@
 import React, {Component} from "react"
-import { Link } from "react-router-dom";
+import Task from './TaskItem'
 import axios from 'axios';
-
+import { Link } from "react-router-dom";
 
 export default class extends Component {
-
-    constructor(props){
-        super(props);
-        this.state = {
-            tasks: []
-        }
+    state = {
+        tasks: []
     }
 
     componentDidMount(){
@@ -24,18 +20,25 @@ export default class extends Component {
 
 
     render(){
-
-        const list = this.state.tasks.map(task => <li><Link to={`/task/${task.id}`}>{task.title}</Link></li> )
+        const list = this.state.tasks.map((task, i) => 
+            <Task
+                key={`${task.id}-${i}`}
+                id={task.id}
+                title={task.title}
+                text={task.text}
+            /> )
         return (
             <div>
-                <ul>
+                <div className="row">
                     <div>Current location: {this.props.location.path}</div>
-
+                </div>
+                <div className="row">
                     {list}
-                </ul>
-                <div><Link to="/dashboard">Dashboard</Link></div>
+                </div>           
+                <div className="row">
+                    <div><Link to="/dashboard">Dashboard</Link></div>
+                </div>
             </div>
-
         )
     }
 }

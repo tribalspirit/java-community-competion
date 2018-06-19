@@ -8,7 +8,7 @@ import ResultDashboard from './components/ResultsDashboard';
 import LoginPage from './components/LoginPage';
 
 const App = () => (
-    <div>
+    <div className='container'>
         <Main />
     </div>
 );
