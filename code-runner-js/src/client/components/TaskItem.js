@@ -1,15 +1,10 @@
 import React from 'react'
-import { Link } from "react-router-dom";
+import classNames from 'classnames'
 
-const Task = ({id, title, text}) => (
-    <div className="card" style={{width: '25rem'}}>
-        <div className="card-header">
-            {title}
-        </div>
-        <div className="card-body">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            {text}
-            <Link to={`/task/${id}`}>Go to task</Link>
+const Task = ({id, title, submitted, onClickFn}) => (
+    <div className="col-lg-3">
+        <div className={classNames('task-item', {'submitted': submitted})}>
+            <a href="#" onClick={() => onClickFn(id)}>{title}</a>
         </div>
     </div>
 )
