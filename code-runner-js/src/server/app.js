@@ -45,7 +45,6 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname + './../../dist/public/login.html'));
 });
@@ -53,7 +52,7 @@ app.get('*', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname + './../../dist/public/index.html'));
 });
 
-app.post('/task/:taskId', async function(req, res, next) {
+app.post('/task/:taskId', (req, res, next) => {
     if (!req.files.source) {
         return res.status(400).send('No files were uploaded.');
     }
@@ -66,7 +65,7 @@ app.post('/task/:taskId', async function(req, res, next) {
         console.log(JSON.stringify({ source: sourceFile.data.toString('utf8')}));
 
         try{
-            let result = await axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8')});
+            let result = axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8')});
             console.log(`Submission id is ${result.data}`);
             res.redirect(`/submission/${result.data}`);
         } catch(e){

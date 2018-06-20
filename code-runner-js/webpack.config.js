@@ -29,16 +29,16 @@ module.exports = function(environment, options) {
                     }
                 },
                 {
-                    test: /\.css$/,
+                    test: /\.css$/i,
                     use: [
-                    MiniCssExtractPlugin.loader,
-                    "css-loader"
+                        MiniCssExtractPlugin.loader,
+                        'css-loader'
                     ]
                 }
             ]
         },
         resolve: {
-            extensions: ['.js', '.jsx']
+            extensions: ['.js', '.jsx', '.css']
         },
         plugins: [
             new HtmlWebpackPlugin({
@@ -56,10 +56,9 @@ module.exports = function(environment, options) {
                 filename: './login.html'
             }),
             new MiniCssExtractPlugin({
-                // Options similar to the same options in webpackOptions.output
-                // both options are optional
-                filename: "style.css"
-              })
+                filename: "[name].css",
+                chunkFilename: "[id].css"
+             })
         ],
         watch: true
     };

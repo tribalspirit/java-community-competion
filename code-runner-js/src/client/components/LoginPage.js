@@ -10,9 +10,11 @@ export default class extends Component {
     }
 
     onFormSubmit = () => {
+        const { history } = this.props
         axios.post('/api/login', {email: this.state.email})
             .then(res => {
-                console.log(res);
+                console.log(res)
+                history.push('/')
             })
             .catch(err => {
                 console.log(err)
@@ -26,14 +28,15 @@ export default class extends Component {
     render() {
         return (
             <div className="login-container">
-                <div className="row">
+                <div className="row header">
                     <div className="col-lg-12">
-                        <h2>Some header here</h2>
+                        <h2>Treasure hunt</h2>
                     </div>
                 </div>
+                <hr/>
                 <div className="row">
                     <div className="col-lg-12">
-                        <label>Enter your EPAM email:</label>
+                        <h4>Enter your EPAM email:</h4>
                     </div>
                 </div>
                 <div className="row">

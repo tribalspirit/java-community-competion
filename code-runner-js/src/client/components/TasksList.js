@@ -1,23 +1,23 @@
 import React, {Component} from "react"
 import Task from './TaskItem'
-import axios from 'axios';
+import TaskDetails from './TaskPage'
+import { fetchTaskData, fetchTasksListForUser } from '../services/dataService';
 import { Link } from "react-router-dom";
 
 export default class extends Component {
     state = {
-        tasks: []
+        tasks: [],
+        currentTaskId: null
     }
 
     componentDidMount(){
-        axios.get('/api/tasks')
-            .then(res => {
-                this.setState({...this.state, tasks: res.data.tasks })
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        const tasks = fetchTasksListForUser()
+        this.setState({tasks})
     }
 
+    _showTaskDetails = (id) => {
+        this.setState({currentTaskId: id})
+    }
 
     render(){
         const list = this.state.tasks.map((task, i) => 
@@ -25,18 +25,26 @@ export default class extends Component {
                 key={`${task.id}-${i}`}
                 id={task.id}
                 title={task.title}
-                text={task.text}
+                submitted={task.submitted}
+                onClickFn={this._showTaskDetails}
             /> )
         return (
             <div>
-                <div className="row">
-                    <div>Current location: {this.props.location.path}</div>
+                <div className="row header">
+                    <div className="col-lg-12">
+                        <h2>Treasure hunt</h2>
+                        <div><Link to="/dashboard">Dashboard</Link></div>
+                    </div>
                 </div>
+                <hr/>
                 <div className="row">
                     {list}
-                </div>           
+                </div>     
+                <hr/>      
                 <div className="row">
-                    <div><Link to="/dashboard">Dashboard</Link></div>
+                    <div className="col-lg-12">
+                        {this.state.currentTaskId ? <TaskDetails taskId={this.state.currentTaskId} /> : <h2>Click on the task to see details</h2>}    
+                    </div>
                 </div>
             </div>
         )

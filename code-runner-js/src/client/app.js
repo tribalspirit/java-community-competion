@@ -1,7 +1,11 @@
 import React, {Component} from "react"
 import ReactDOM from "react-dom"
-import axios, { post } from 'axios';
+
+import './style/bootstrap.min.css'
+import './style/style.css'
+
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
+
 import TasksList from './components/TasksList';
 import TaskPage from './components/TaskPage';
 import ResultDashboard from './components/ResultsDashboard';
