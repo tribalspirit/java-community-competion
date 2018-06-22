@@ -8,19 +8,21 @@ class TaskDetails extends React.Component {
     }
 
     componentDidMount() {
-        let task = fetchTaskData(this.props.taskId)
-        this.setState({task})        
+        fetchTaskData(this.props.match.params.taskId)
+            .then(task => this.setState({task}) )
+            .catch(e => console.log(e))
+
     }
 
     componentWillReceiveProps(nextProps){
         if (!nextProps.taskId) return
-        let task = fetchTaskData(nextProps.taskId)
-        this.setState({task})
+        fetchTaskData(nextProps.taskId)
+            .then(task => this.setState({task}))
+            .catch(e => console.log(e))
     }
 
     render() {
         let task = this.state.task
-
         return (
             <div className='row'>
                 {task && <div className='col-lg-12'>

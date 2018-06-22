@@ -33,6 +33,20 @@ describe('test express routing', function() {
                     expect(res.status).toEqual(200);
                 })
         });
+
+        test('should return index page if authenticated', async () => {
+            await axios.post('http://localhost:6000/api/login', { email: 'test@epam.com' })
+                .then((res) => {
+                    console.log(res);
+                });
+            await axios
+                .get('http://localhost:6000/login')
+                .then((res) => {
+                    console.log(res);
+                    expect(res.status).toEqual(302);
+
+                })
+        });
     });
 
     describe('not authenticated', () => {

@@ -12,7 +12,9 @@ export default class extends Component {
 
     componentDidMount(){
         const tasks = fetchTasksListForUser()
-        this.setState({tasks})
+        tasks.then(tasks => this.setState({tasks}))
+            .catch(e => console.log(e))
+
     }
 
     _showTaskDetails = (id) => {
@@ -20,14 +22,16 @@ export default class extends Component {
     }
 
     render(){
-        const list = this.state.tasks.map((task, i) => 
-            <Task
-                key={`${task.id}-${i}`}
-                id={task.id}
-                title={task.title}
-                submitted={task.submitted}
-                onClickFn={this._showTaskDetails}
-            /> )
+        const list = this.state.tasks.map((task, i) =>
+            <Link to={`/task/${task.id}`}>
+                    <Task
+                    key={`${task.id}-${i}`}
+                    id={task.id}
+                    title={task.title}
+                    submitted={task.submitted}
+                />
+            </Link>
+            )
         return (
             <div>
                 <div className="row header">
@@ -41,11 +45,11 @@ export default class extends Component {
                     {list}
                 </div>     
                 <hr/>      
-                <div className="row">
-                    <div className="col-lg-12">
-                        {this.state.currentTaskId ? <TaskDetails taskId={this.state.currentTaskId} /> : <h2>Click on the task to see details</h2>}    
-                    </div>
-                </div>
+                {/*<div className="row">*/}
+                    {/*<div className="col-lg-12">*/}
+                        {/*{this.state.currentTaskId ? <TaskDetails taskId={this.state.currentTaskId} /> : <h2>Click on the task to see details</h2>}    */}
+                    {/*</div>*/}
+                {/*</div>*/}
             </div>
         )
     }

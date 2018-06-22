@@ -1,10 +1,10 @@
 import React from 'react'
 import classNames from 'classnames'
 
-const Task = ({id, title, submitted, onClickFn}) => (
+const Task = ({id, title, submitted}) => (
     <div className="col-lg-3">
         <div className={classNames('task-item', {'submitted': submitted})}>
-            <a href="#" onClick={() => onClickFn(id)}>{title}</a>
+            {title}
         </div>
     </div>
 )

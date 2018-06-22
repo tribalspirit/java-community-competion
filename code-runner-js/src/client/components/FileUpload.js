@@ -25,7 +25,7 @@ class SimpleReactFileUpload extends React.Component {
     }
 
     fileUpload(file){
-        const url = '/task/1';
+        const url = '/api/task/1';
         const formData = new FormData();
         formData.append('source', file)
         const config = {
