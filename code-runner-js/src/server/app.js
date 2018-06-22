@@ -46,8 +46,10 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    console.log('returning index.html for login');
     res.sendFile(path.join(__dirname + './../../dist/public/index.html'));
+    if(req.session.userId){
+        res.redirect('/');
+    }
 });
 
 app.get('*', isAuthenticated, (req, res) => {
