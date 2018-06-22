@@ -48,13 +48,6 @@ module.exports = function(environment, options) {
                 chunks: ['app'],
                 filename: './index.html'
             }),
-            new HtmlWebpackPlugin({
-                title: 'Login Page',
-                hash: true,
-                template: './src/client/login.html',
-                chunks: ['login'],
-                filename: './login.html'
-            }),
             new MiniCssExtractPlugin({
                 filename: "[name].css",
                 chunkFilename: "[id].css"

@@ -46,9 +46,12 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname + './../../dist/public/login.html'));
+    console.log('returning index.html for login');
+    res.sendFile(path.join(__dirname + './../../dist/public/index.html'));
 });
+
 app.get('*', isAuthenticated, (req, res) => {
+    console.log('Returning index html for all');
     res.sendFile(path.join(__dirname + './../../dist/public/index.html'));
 });
 

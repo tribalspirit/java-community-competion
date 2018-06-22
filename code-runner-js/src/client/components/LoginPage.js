@@ -14,18 +14,24 @@ export default class extends Component {
         axios.post('/api/login', {email: this.state.email})
             .then(res => {
                 console.log(res)
-                history.push('/')
+                this.setState({
+                    ...this.state,
+                    authenticated: true
+                })
             })
             .catch(err => {
                 console.log(err)
             })
-    }
+    };
 
     onChange = (e) => {
         this.setState({email: e.target.value})
-    }
+    };
 
     render() {
+        if(this.state.authenticated){
+            return <Redirect to={{pathname: '/', state: {from: '/login'}}} />;
+        }
         return (
             <div className="login-container">
                 <div className="row header">
