@@ -2,17 +2,24 @@ package com.epam.coderunner.runners;
 
 import com.epam.coderunner.model.Status;
 import com.epam.coderunner.model.TestingStatus;
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.time.Duration;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskExecutorImplTest {
 
-    private final TaskExecutor taskExecutor = new TaskExecutorImpl(1);
+    private static final TaskExecutorImpl taskExecutor = new TaskExecutorImpl(1000);
+
+    @AfterClass
+    public static void dispose() {
+        taskExecutor.dispose();
+    }
 
     @Test
     public void passThrough() {
@@ -24,14 +31,25 @@ public class TaskExecutorImplTest {
         assertThat(result).isEqualTo(testingStatus);
     }
 
+    @Rule public ExpectedException thrown = ExpectedException.none();
+
     @Test
-    public void timeoutTaskShouldBeCanceled(){
+    public void timeoutTaskShouldBeCanceled() {
         final Callable<TestingStatus> task = () -> {
             while (true) {}
         };
 
-        final TestingStatus result = taskExecutor.submit(task).block(Duration.ofSeconds(1));
-        assertThat(result).isNotNull();
-        assertThat(result.getErrorType()).isEqualTo(TimeoutException.class.getName());
+        thrown.expectMessage("Timeout");
+        taskExecutor.submit(task).block(Duration.ofSeconds(1));
+    }
+
+    @Test
+    public void errorThrown() {
+        final Callable<TestingStatus> task = this::infiniteRecursion;
+        thrown.expectMessage("TimeoutException");
+        taskExecutor.submit(task).block(Duration.ofSeconds(2));
+    }
+    private TestingStatus infiniteRecursion() {
+        return infiniteRecursion();
     }
 }
