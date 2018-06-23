@@ -12,8 +12,10 @@ router.post('/solution/:taskId', isAuthenticate, (req, res) => {
   const sourceFile = req.files.source;
   const { taskId } = req.params;
   const source = sourceFile.data.toString('utf8');
+  const userId = req.session.userId;
 
-  const status = checkSubmission(taskId, req.session.userId, source, sourceFile.name.endsWith('.java') ? 'java' : 'js');
+  console.log(`User ${userId} submitted code: ${source}`);
+  const status = checkSubmission(taskId, userId, source, sourceFile.name.endsWith('.java') ? 'java' : 'js');
 
   res.send(status);
 });

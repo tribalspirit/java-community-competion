@@ -1,5 +1,8 @@
 const requireFromString = require('require-from-string');
-const { getUserTasks } = require('./dataService');
+const { getUserTasks, unlockNextTaskForUser } = require('./dataService');
+
+
+const REQUIRED_PASS_PERCENT = 100;
 
 module.exports = (taskId, userId, source, language) => {
   const userTasks = getUserTasks(userId);
@@ -12,13 +15,13 @@ module.exports = (taskId, userId, source, language) => {
     };
   }
 
+  let result;
   if (language === 'java') {
     console.log(`Provided java code for taskId ${taskId}`);
     console.log(JSON.stringify({ source: sourceFile.data.toString('utf8') }));
 
     try {
-      const result = axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8') });
-      return result;
+      result = axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8') });
     } catch (e) {
       console.log(e);
       return {
@@ -27,7 +30,7 @@ module.exports = (taskId, userId, source, language) => {
     }
   } else {
     const functionToTest = requireFromString(source);
-    const result = {
+    result = {
       totalTestCount: Object.keys(task.acceptanceTests).length,
       testsPassed: 0,
 
@@ -39,10 +42,16 @@ module.exports = (taskId, userId, source, language) => {
       if (expectedOutput == actualOutput) {
         result.testsPassed += 1;
       } else if (!result.firstFailedInput) {
+        console.log(`Test failed for user ${userId}: expected: ${expectedOutput}, actual: ${actualOutput}`);
         result.firstFailedInput = input;
       }
     });
-
-    return result;
   }
+
+
+  if (result.testsPassed / result.totalTestCount >= REQUIRED_PASS_PERCENT / 100) {
+    const nextTaskId = unlockNextTaskForUser(userId, taskId);
+    result.nextTaskId = nextTaskId;
+  }
+  return result;
 };
