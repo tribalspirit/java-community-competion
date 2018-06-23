@@ -1,77 +1,57 @@
 package com.epam.coderunner.runners;
 
-import com.epam.coderunner.Status;
+import com.epam.coderunner.model.CompiledTask;
+import com.epam.coderunner.model.Task;
+import com.epam.coderunner.model.TaskRequest;
 import com.epam.coderunner.model.TestingStatus;
-import com.epam.coderunner.storage.TasksStorage;
-import com.google.common.annotations.VisibleForTesting;
-import org.joor.Reflect;
+import com.epam.coderunner.storage.TaskStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Component
-public class JavaCodeRunner {
+final class JavaCodeRunner implements CodeRunner {
+    private static final Logger LOG = LoggerFactory.getLogger(JavaCodeRunner.class);
+    private static final AtomicLong classId = new AtomicLong(1000000);
+
+    private final TaskExecutor taskExecutor;
+    private final TaskStorage taskStorage;
 
     @Autowired
-    private TasksStorage tasksStorage;
-
-    private Executor executor = Executors.newCachedThreadPool();
-
-    private static final Logger LOG = LoggerFactory.getLogger(JavaCodeRunner.class);
-
-    public String runCode(String className, String source, Map<String, String> inputOutputs) {
-        try {
-            Object obj = Reflect.compile(className, source).create().get();
-            LOG.debug("Source code has type of {}", obj.getClass());
-            Function<String, String> function = Reflect.compile(className, source).create().get();
-            String submissionId = "" + System.currentTimeMillis();
-
-            LOG.debug("Checking code with submission id {}", submissionId);
-            executor.execute(() -> {
-                checkSolution(inputOutputs, function, submissionId);
-            });
-            return submissionId;
-        } catch(Exception e){
-            LOG.error("Error while compiling: ", e);
-            return "COMPILATION_ERROR: " + e.getMessage();
-        }
+    JavaCodeRunner(final TaskExecutor taskExecutor,
+                   final TaskStorage taskStorage) {
+        this.taskExecutor = taskExecutor;
+        this.taskStorage = taskStorage;
     }
 
-    private void checkSolution(Map<String, String> inputOutputs, Function<String, String> function, String submissionId) {
+    @Override
+    public Mono<TestingStatus> run(final TaskRequest taskRequest) {
+        final long taskId = taskRequest.getTaskId();
+        final String userId = taskRequest.getUserId();
+        final String sourceCode = taskRequest.getSource();
+        final String className = "LoadedClass" + classId.getAndIncrement();
+        final String signature = taskRequest.signature();
+        LOG.debug("{}Begin to compile task source, classId={}, source:\n{}", signature, classId.get(), sourceCode);
+        final CompiledTask compiledTask;
         try {
-            TestingStatus testingStatus = new TestingStatus();
-
-            boolean allTestsPassed = true;
-            for (Map.Entry<String, String> entry : inputOutputs.entrySet()) {
-                String input = entry.getKey();
-                String expected = entry.getValue();
-                String actual = function.apply(input);
-                if (!actual.equals(expected)) {
-                    testingStatus.addStatus(Status.FAIL);
-                    allTestsPassed = false;
-                    LOG.info("Submission id {} failed on test [{}]. Expected: [{}], actual: [{}]", submissionId, input, expected, actual);
-                } else {
-                    testingStatus.addStatus(Status.PASS);
-                }
-                tasksStorage.updateTestStatus(submissionId, testingStatus);
-            }
-            testingStatus.setAllTestsDone(true);
-            testingStatus.setAllTestsPassed(allTestsPassed);
-            tasksStorage.updateTestStatus(submissionId, testingStatus);
-            LOG.info("Submission id is checked. All tests passed: {}", allTestsPassed);
-        } catch (Throwable th){
-            LOG.error("Error while checking submission {}", submissionId, th);
+            final Function<String, String> function = RuntimeCodeCompiler.compile(className, sourceCode);
+            final Task task = checkNotNull(taskStorage.getTask(taskId), "No task[id:%s] found", taskId);
+            compiledTask = new CompiledTask(userId, taskId, task.getAcceptanceTests(), function);
+        } catch (final Exception e) {
+            LOG.error("{}Error while preparing task:", signature, e);
+            return Mono.just(TestingStatus.error(e));
         }
-    }
+        LOG.debug("{}Source compiled, task fetched, start scheduling tests..", signature);
 
-    @VisibleForTesting
-    public void setTasksStorage(TasksStorage tasksStorage) {
-        this.tasksStorage = tasksStorage;
+        return taskExecutor.submit(() -> SolutionChecker.checkSolution(compiledTask))
+                .doOnSuccess(r -> LOG.debug("{}Testing completed, result:{}", signature, r.toJson()))
+                .doOnError(e -> LOG.debug("{}Testing failed, error:", signature, e));
     }
 }

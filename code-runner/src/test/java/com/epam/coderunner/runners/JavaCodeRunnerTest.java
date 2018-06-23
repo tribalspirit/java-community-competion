@@ -1,42 +1,33 @@
 package com.epam.coderunner.runners;
 
-import com.epam.coderunner.Status;
+import com.epam.coderunner.model.Task;
+import com.epam.coderunner.model.TaskRequest;
 import com.epam.coderunner.model.TestingStatus;
-import com.epam.coderunner.storage.TasksStorage;
+import com.epam.coderunner.storage.TaskStorage;
 import com.google.common.collect.ImmutableMap;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.verification.VerificationMode;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-import static com.epam.coderunner.Status.FAIL;
-import static com.epam.coderunner.Status.PASS;
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.calls;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.client.ExpectedCount.once;
+import static com.epam.coderunner.model.Status.FAIL;
+import static com.epam.coderunner.model.Status.PASS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class JavaCodeRunnerTest {
 
-    @Mock
-    private TasksStorage tasksStorage;
+    private final TaskStorage taskStorage = mock(TaskStorage.class);
+    private final TaskExecutor taskExecutor = mock(TaskExecutor.class);
 
-    private String code = "" +
+    private static final String code = "" +
             "import java.util.function.Function;\n" +
             "\n" +
-            "public class Test implements Function<String, String> {\n" +
+            "public class Solution1 implements Function<String, String> {\n" +
             "\n" +
             "    @Override\n" +
             "    public String apply(String s) {\n" +
@@ -44,37 +35,40 @@ public class JavaCodeRunnerTest {
             "    }\n" +
             "}";
 
-    private JavaCodeRunner testee = new JavaCodeRunner();
+    private final JavaCodeRunner testee = new JavaCodeRunner(taskExecutor, taskStorage);
 
     @Before
-    public void init(){
-        testee.setTasksStorage(tasksStorage);
-    }
-
-    @Test
-    public void shouldCompileAndRun() throws InterruptedException {
-
-        Map<String, String> inOut = ImmutableMap.of(
+    public void setup(){
+        final Map<String, String> inOut = ImmutableMap.of(
                 "1", "1",
                 "2", "2",
                 "asdasd, asdads", "asdasd, asdasd"
         );
+        final Task task = new Task();
+        task.setAcceptanceTests(inOut);
+        doReturn(task).when(taskStorage).getTask(1);
 
+        when(taskExecutor.submit(any())).thenAnswer(invocationOnMock -> {
+            final Callable<TestingStatus> callable = invocationOnMock.getArgument(0);
+            return Mono.fromCallable(callable);
+        });
+    }
 
+    @Test
+    public void shouldCompileAndRun() {
+        final TaskRequest taskRequest = new TaskRequest();
+        taskRequest.setTaskId(1);
+        taskRequest.setUserId("user@epam.com");
+        taskRequest.setSource(code);
 
-        testee.runCode("Test", code, inOut);
+        final TestingStatus result = testee.run(taskRequest).block(Duration.ofSeconds(1));
 
-        Thread.sleep(1000);
+        verify(taskStorage).getTask(1);
 
-        ArgumentCaptor<TestingStatus> captor = ArgumentCaptor.forClass(TestingStatus.class);
-
-        verify(tasksStorage, times(inOut.size() + 1)).updateTestStatus(anyString(), captor.capture());
-
-        TestingStatus result = captor.getAllValues().get(inOut.size());
-
-        assertTrue(result.isAllTestsDone());
-        assertFalse(result.isAllTestsPassed());
-
-        assertThat(result.getTestsStatuses(), Matchers.contains(PASS, PASS, FAIL));
+        assertThat(result).isNotNull();
+        assertThat(result.isAllTestsDone()).isTrue();
+        assertThat(result.isAllTestsPassed()).isFalse();
+        assertThat(result.getTestsStatuses()).containsExactly(PASS, PASS, FAIL);
+        assertThat(result.getCurrentFailedInput()).isEqualTo("asdasd, asdads");
     }
 }
