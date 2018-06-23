@@ -1,16 +1,18 @@
 var express = require('express');
 var router = express.Router();
+const {getUserTasks } = require('../services/dataService');
 const isAuthenticated = require('../auth/isAuthenticated');
-let taskList = require('./mock');
 
 
 router.get('/tasks', isAuthenticated, function (req, res) {
+    const taskList = getUserTasks(req.session.userId);
     const tasks = taskList.map(task => mapToTaskOnUI(task));
     console.log(`returning list of tasks id to user ${req.session.userId}: ${tasks.map(task => task.id)}`);
     res.send(tasks);
 });
 
 router.get('/tasks/:taskId', isAuthenticated, function (req, res) {
+    const taskList = getUserTasks(req.session.userId);
     const task = taskList.filter(task => task.id == req.params.taskId).map(task => mapToTaskOnUI(task));
 
     if(task.length >0){

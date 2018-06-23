@@ -1,7 +1,7 @@
 import React, {Component} from "react"
 import axios, { post } from 'axios';
 
-class SimpleReactFileUpload extends React.Component {
+export default class extends React.Component {
 
     constructor(props) {
         super(props);
@@ -25,7 +25,7 @@ class SimpleReactFileUpload extends React.Component {
     }
 
     fileUpload(file){
-        const url = '/api/task/1';
+        const url = `/api/solution/${this.props.taskId}`;
         const formData = new FormData();
         formData.append('source', file)
         const config = {
@@ -46,5 +46,3 @@ class SimpleReactFileUpload extends React.Component {
         )
     }
 }
-
-export default SimpleReactFileUpload;

@@ -1,5 +1,6 @@
 import React, {Component} from "react"
 import { fetchTaskData } from '../services/dataService';
+import UploadForm from './FileUpload';
 
 class TaskDetails extends React.Component {
 
@@ -13,13 +14,13 @@ class TaskDetails extends React.Component {
             .catch(e => console.log(e))
 
     }
-
-    componentWillReceiveProps(nextProps){
-        if (!nextProps.taskId) return
-        fetchTaskData(nextProps.taskId)
-            .then(task => this.setState({task}))
-            .catch(e => console.log(e))
-    }
+    //
+    // componentWillReceiveProps(nextProps){
+    //     if (!nextProps.taskId) return
+    //     fetchTaskData(nextProps.taskId)
+    //         .then(task => this.setState({task}))
+    //         .catch(e => console.log(e))
+    // }
 
     render() {
         let task = this.state.task
@@ -31,6 +32,9 @@ class TaskDetails extends React.Component {
                             {task.title}
                         </div>
                         <p dangerouslySetInnerHTML={{__html:task.htmlDesc}}></p>
+                    </div>
+                    <div>
+                        <UploadForm taskId={this.props.match.params.taskId}/>
                     </div>
                 </div>}
             </div>)
