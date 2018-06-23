@@ -1,31 +1,21 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const isAuthenticate = require('../auth/isAuthenticated');
+const checkSubmission = require('../services/checkSubmission');
 
-router.post('/solution/:taskId', (req, res, next) => {
-    if (!req.files.source) {
-        return res.status(400).send('No files were uploaded.');
-    }
+const router = express.Router();
 
-    let sourceFile = req.files.source;
-    let taskId = req.params.taskId;
+router.post('/solution/:taskId', isAuthenticate, (req, res) => {
+  if (!req.files.source) {
+    return res.status(400).send('No files were uploaded.');
+  }
 
-    let source = sourceFile.data.toString('utf8');
+  const sourceFile = req.files.source;
+  const { taskId } = req.params;
+  const source = sourceFile.data.toString('utf8');
 
-    res.send(`Submitted content: ${source}`)
+  const status = checkSubmission(taskId, req.session.userId, source, sourceFile.name.endsWith('.java') ? 'java' : 'js');
 
-    // if(sourceFile.name.endsWith('.java')){
-    //     console.log(`Provided java code for taskId ${taskId}`);
-    //     console.log(JSON.stringify({ source: sourceFile.data.toString('utf8')}));
-    //
-    //     try{
-    //         let result = axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8')});
-    //         console.log(`Submission id is ${result.data}`);
-    //         res.redirect(`/submission/${result.data}`);
-    //     } catch(e){
-    //         console.log(e);
-    //         next(e);
-    //     }
-    // }
+  res.send(status);
 });
 
 module.exports = router;

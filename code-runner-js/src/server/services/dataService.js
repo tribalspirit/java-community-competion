@@ -1,9 +1,10 @@
-let taskList = require('./mock');
+const taskList = require('./mock');
 
-const getUserTasks = (userId) => {
-    return taskList
-}
+const getUserTasks = userId => taskList;
+
+// const getTaskById = (userId, taskId) => taskList.find(task => task.id == taskId);
 
 module.exports = {
-    getUserTasks
-}
+  getUserTasks,
+  // getTaskById,
+};

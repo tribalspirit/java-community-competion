@@ -1,9 +1,9 @@
 module.exports = [
-    {
-        id: 'ts1',
-        title: 'ts1',
-        shortDesc: 'ts1',
-        longDesc: `
+  {
+    id: 'ts1',
+    title: 'ts1',
+    shortDesc: 'ts1',
+    longDesc: `
 
         You are visiting a friend in Korea. She lives in a nice, tall building in the city centre. But oh no, she's not home yet! To lift your spirit, you decide to do some lifting. Or maybe elevating. Anyway, you want to ride the elevator up up up and away!
 
@@ -111,41 +111,43 @@ module.exports = [
         Output: lonely after 2 stops at 2 floor
 
         `,
-        submitted: true,
-        testExamples: {
-            '1': '1',
-            '1,2,3': '6'
-        },
-        acceptanceTests: {
-            '1,2,3,4,5,6' : '21'
-        }
+    submitted: true,
+    testExamples: {
+      1: '1',
+      '1,2,3': '6',
     },
-    {
-        id: 'ts2',
-        title: 'ts2',
-        shortDesc: 'ts1',
-        longDesc: 'ts1',
-        submitted: false,
-        testExamples: {
-            '1': '1',
-            '1,2,3': '6'
-        },
-        acceptanceTests: {
-            '1,2,3,4,5,6' : '21'
-        }
+    acceptanceTests: {
+      1: '1',
+      '1,2,3': '6',
+      '1,2,3,4,5,6': '21',
     },
-    {
-        id: 'ts3',
-        title: 'ts3',
-        shortDesc: 'ts3',
-        longDesc: 'ts3',
-        submitted: false,
-        testExamples: {
-            '1': '1',
-            '1,2,3': '6'
-        },
-        acceptanceTests: {
-            '1,2,3,4,5,6' : '21'
-        }
-    }   
+  },
+  {
+    id: 'ts2',
+    title: 'ts2',
+    shortDesc: 'ts1',
+    longDesc: 'ts1',
+    submitted: false,
+    testExamples: {
+      1: '1',
+      '1,2,3': '6',
+    },
+    acceptanceTests: {
+      '1,2,3,4,5,6': '21',
+    },
+  },
+  {
+    id: 'ts3',
+    title: 'ts3',
+    shortDesc: 'ts3',
+    longDesc: 'ts3',
+    submitted: false,
+    testExamples: {
+      1: '1',
+      '1,2,3': '6',
+    },
+    acceptanceTests: {
+      '1,2,3,4,5,6': '21',
+    },
+  },
 ];
