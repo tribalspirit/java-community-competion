@@ -12,21 +12,22 @@ class TaskDetails extends React.Component {
 
     componentDidMount() {
         fetchTaskData(this.props.taskId)
-            .then(task => this.setState({task}) )
+            .then(task => this.setState({task, taskStatus: null}) )
             .catch(e => console.log(e))
 
     }
     
     componentWillReceiveProps(nextProps){
         if (!nextProps.taskId) return
+        const { task } = this.state
+
+        let taskStatus = this.state.taskStatus
+        if (task && task.id !== nextProps.taskId) taskStatus = null
+        
         fetchTaskData(nextProps.taskId)
-            .then(task => this.setState({task}))
+            .then(task => this.setState({task, taskStatus}))
             .catch(e => console.log(e))
     }
-
-    _onSubmitForm = (taskStatus) => {this.setState({taskStatus})}
-
-    
     _showTaskStatus = (taskStatus) => {
         this.setState({taskStatus})
     }
@@ -49,10 +50,10 @@ class TaskDetails extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <UploadForm taskId={this.props.taskId} onSubmitFn={this._showTaskStatus}/>
+                        {task && task.status !== 'SOLVED' && <UploadForm taskId={this.props.taskId} onSubmitFn={this._showTaskStatus}/>}
                     </div>
                 </div>}
-            </div>)
+            </div>) 
     }
 }
 

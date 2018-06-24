@@ -43,13 +43,14 @@ hr {
     line-height: 100px;
     cursor: pointer;
 
+
 }
 
 .task-item:hover {
   box-shadow: 0 0 0 5px rgba(#fff,.4) , 0 0 0 10px  rgb(9, 16, 65);
 }
 
-.task-item a {
+.task-item span {
   font-size: 25px;
   color: white;
   text-decoration: none;
@@ -58,6 +59,17 @@ hr {
 .task-item.submitted {
     background: #8FB339;
 }
+
+.task-item.disabled {
+  background: grey;
+  cursor: not-allowed;
+}
+
+.task-item.disabled a{
+  color: rgb(10, 9, 9);
+  cursor: not-allowed;
+}
+
 
 .form-upload, .status {
   margin: 15px 0;

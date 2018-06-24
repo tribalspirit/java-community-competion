@@ -29,8 +29,8 @@ export default class extends Component {
             <Task
                 key={`${task.id}-${i}`}
                 id={task.id}
-                title={task.title}
-                submitted={task.submitted}
+                title={i+1}
+                status={task.status}
                 onClickFn={this._showTaskDetails}
             />)
         return (

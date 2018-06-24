@@ -20,8 +20,8 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
                 <h4>First failed test input:</h4>
             </div>
             <div className='row'>
-                <div class="card failed-input">
-                    <div class="card-body">
+                <div className="card failed-input">
+                    <div className="card-body">
                         {msg}
                     </div>
                 </div>  
