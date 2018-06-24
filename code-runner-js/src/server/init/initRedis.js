@@ -120,8 +120,8 @@ const tasks = [
     {
         id: 'ts2',
         title: 'ts2',
-        shortDesc: 'ts1',
-        longDesc: 'ts1',
+        shortDesc: 'ts2',
+        longDesc: 'ts2',
         acceptanceTests: {
             '1,2,3,4,5,6': '21',
         },
@@ -156,7 +156,7 @@ client.keys('*', (err, replies) => {
     replies.forEach(key => client.del(key));
     tasks.forEach(task => client.set(`task:${task.id}`, JSON.stringify(task)));
 
-    tasks.forEach(task => client.sadd('taskIds', task.id));
+    tasks.forEach(task => client.rpush('taskIds', task.id));
 
     client.quit();
 

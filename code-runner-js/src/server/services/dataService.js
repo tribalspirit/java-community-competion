@@ -12,12 +12,13 @@ client.on('error', (err) => {
 
 
 let asyncSmemebers = promisify(client.smembers).bind(client);
+let asyncLrange = promisify(client.lrange).bind(client);
 let asyncGet = promisify(client.get).bind(client);
 let asyncHGetAll = promisify(client.hgetall).bind(client);
 
 
 const getTaskIds = () => {
-    return asyncSmemebers('taskIds')
+    return asyncLrange('taskIds', 0, -1)
         .then(ids => {
             console.log('Tasks ids:', ids);
             return ids;
@@ -86,32 +87,29 @@ const getUserTasks = userId => {
       .catch(e => console.log(e))
 };
 
-const unlockNextTaskForUser = (userId, currentTaskId) => {
-  const allTasks = getAllTasks();
-  const currentUnlockedId = getUserTasks(userId).map(task => task.id);
+const markTaskAsDoneAndUnlockNextTaskForUser = (userId, currentTaskId) => {
+  getUserTasks(userId)
+      .then(tasks => {
+          const index = tasks.findIndex(task => task.id === currentTaskId);
+          if (index === tasks.length) {
+              console.log(`User ${userId} has solved last task! `);
+          } else {
+              const nextTaskId = tasks[index + 1].id;
+              client.hset(`status:${userId}`, currentTaskId, "SOLVED");
+              client.hset(`status:${userId}`, nextTaskId, "UNLOCKED");
+              console.log(`User ${userId} solved task ${currentTaskId} and unlocked task ${nextTaskId} at ${new Date()}`)
+          }
 
-  const index = allTasks.findIndex(task => task.id === currentTaskId);
-  if (index === allTasks.length) {
-    console.log(`User ${userId} has solved last task! `);
-    return 'DONE';
-  }
-  const nextTaskId = allTasks[index + 1].id;
-  if (!currentUnlockedId.includes(nextTaskId)) {
-    // update redis to include next task in user's list
-    console.log(`User ${userId} unlocked task ${nextTaskId}`);
-  }
-  return nextTaskId;
+      })
 };
 
+const saveSubmissionInfo = (userId, taskId, result) => {
 
-
-
-
-
+}
 
 
 module.exports = {
   getUserTasks,
-  unlockNextTaskForUser,
+    markTaskAsDoneAndUnlockNextTaskForUser,
     initUserInRedis
 };
