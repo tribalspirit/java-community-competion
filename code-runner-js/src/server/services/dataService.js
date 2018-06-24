@@ -1,21 +1,90 @@
-const taskList = require('./mock');
+const redis = require('redis');
+const {promisify} = require('util');
 
-const getUserTasks = userId => {
-  const allTasks = getAllTasks();
-  const userTasksStatuses = {
-    "ts1": "SOLVED",
-      "ts2": "UNLOCKED",
-      "ts3": "LOCKED"
-  }
-  return allTasks.map(task => {
-    task.status = userTasksStatuses[task.id]
-      return task;
-  });
+const client = redis.createClient(); // this creates a new client
+
+client.on('connect', () => {
+    console.log('Redis client connected');
+});
+client.on('error', (err) => {
+    console.log(`Something went wrong ${err}`);
+});
+
+
+let asyncSmemebers = promisify(client.smembers).bind(client);
+let asyncGet = promisify(client.get).bind(client);
+let asyncHGetAll = promisify(client.hgetall).bind(client);
+
+
+const getTaskIds = () => {
+    return asyncSmemebers('taskIds')
+        .then(ids => {
+            console.log('Tasks ids:', ids);
+            return ids;
+        })
+        .catch(e => console.log(e));
 };
 
-const getAllTasks = () => taskList;
+const getAllTasks = () => {
+    const taskIds = getTaskIds();
+    return taskIds
+        .then(ids => {
+            let tasksPromises = ids.map(taskId => asyncGet(`task:${taskId}`));
+            return Promise.all(tasksPromises);
+        })
+        .catch(e => console.log(e))
+};
 
-// const getTaskById = (userId, taskId) => taskList.find(task => task.id == taskId);
+const initUserInRedis = (userId) => {
+    const users = client.smembers('userIds', (err, replies) => {
+        console.log(replies);
+        if(replies.length > 0 && replies.includes(userId)){
+            console.log(`User ${userId} already exists`);
+        } else {
+            client.sadd('userIds', userId);
+            const taskIds = getTaskIds();
+            taskIds.then(ids => {
+                console.log(ids);
+                client.hset(`status:${userId}`, ids[0], "UNLOCKED");
+                for(let i=1;i<ids.length;i++){
+                    client.hset(`status:${userId}`, ids[i], "LOCKED")
+                }
+            })
+                .catch(e => console.log(e))
+
+        }
+    });
+
+};
+
+const getUserTaskStatuses = (userId) => {
+  return asyncHGetAll(`status:${userId}`)
+      .then(tasksStatuses => {
+          console.log(`Task statuses for user ${userId}: ${JSON.stringify(tasksStatuses)}`)
+          return tasksStatuses;
+      })
+      .catch(e => console.log(e))
+};
+
+
+const getUserTasks = userId => {
+  const allTasksPromise = getAllTasks();
+  const userTasksStatusesPromise = getUserTaskStatuses(userId);
+  return Promise.all([allTasksPromise, userTasksStatusesPromise])
+      .then((results) => {
+          console.log('Results:', results);
+          let allTasks = results[0];
+          let userTasksStatuses = results[1];
+          let enrichedTasks = allTasks.map(task => {
+              let taskObj = JSON.parse(task);
+              taskObj.status = userTasksStatuses[taskObj.id];
+              return taskObj;
+          });
+          console.log('Enriched tasks: ', enrichedTasks);
+          return enrichedTasks;
+      })
+      .catch(e => console.log(e))
+};
 
 const unlockNextTaskForUser = (userId, currentTaskId) => {
   const allTasks = getAllTasks();
@@ -34,7 +103,15 @@ const unlockNextTaskForUser = (userId, currentTaskId) => {
   return nextTaskId;
 };
 
+
+
+
+
+
+
+
 module.exports = {
   getUserTasks,
   unlockNextTaskForUser,
+    initUserInRedis
 };
