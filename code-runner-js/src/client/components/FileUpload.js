@@ -2,28 +2,22 @@ import React, { Component } from 'react';
 import axios, { post } from 'axios';
 
 export default class extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      file: null,
-    };
-    this.onFormSubmit = this.onFormSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.fileUpload = this.fileUpload.bind(this);
+  state = {
+    file: null,
   }
 
-  onFormSubmit(e) {
-    e.preventDefault(); // Stop form submit
+  onFormSubmit = (e) => {
     this.fileUpload(this.state.file).then((response) => {
       console.log(response.data);
+      this.props.onSubmitFn(response.data)
     });
   }
 
-  onChange(e) {
+  onChange = (e) => {
     this.setState({ file: e.target.files[0] });
   }
 
-  fileUpload(file) {
+  fileUpload = (file) => {
     const url = `/api/solution/${this.props.taskId}`;
     const formData = new FormData();
     formData.append('source', file);
@@ -37,15 +31,15 @@ export default class extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.onFormSubmit}>
-        <h1>
-File Upload
-        </h1>
-        <input type="file" onChange={this.onChange} />
-        <button type="submit">
-Upload
-        </button>
-      </form>
-    );
+      <div className='form-upload row'>
+        <div className='col-lg-12'>
+          <h3>File Upload</h3>
+          <input type="file" onChange={this.onChange} />
+          <button type="submit" onClick={this.onFormSubmit}>
+            Upload
+          </button>
+        </div>
+      </div>
+    )
   }
 }

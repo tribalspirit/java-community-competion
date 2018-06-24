@@ -13,7 +13,19 @@ hr {
 
 .container {
   background-color: #CDD5D1;
+  width: 80%;
+  margin: 0 auto;
   min-height: 100vh;
+}
+
+.details-container {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.failed-input {
+  margin: 15px;
+  width: 300px;
 }
 
 .header {
@@ -45,4 +57,9 @@ hr {
 
 .task-item.submitted {
     background: #8FB339;
+}
+
+.form-upload, .status {
+  margin: 15px 0;
+  padding: 15px;
 }
