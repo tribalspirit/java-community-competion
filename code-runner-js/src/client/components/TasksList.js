@@ -29,7 +29,7 @@ export default class extends Component {
             <Task
                 key={`${task.id}-${i}`}
                 id={task.id}
-                title={i+1}
+                title={task.id}
                 status={task.status}
                 onClickFn={this._showTaskDetails}
             />)

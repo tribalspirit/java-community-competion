@@ -1,3 +1,5 @@
+const LOCKED = 'LOCKED'
+
 export const taskList = [
   {
     id: 'ts1',
@@ -149,3 +151,27 @@ export const taskList = [
     },
   },
 ];
+
+export const dashboard = {
+  user1: {
+    tas1: 80,
+    task2: 30,
+    sdf: LOCKED
+  },
+  user34: {
+    tas1: 80,
+    task2: 30,
+    sdf: LOCKED
+  },
+  osoddf: {
+    tas1: 80,
+    task2: LOCKED,
+    sdf: LOCKED
+  },
+  SemyonSemyonovich: {
+    tas1: 80,
+    task2: LOCKED,
+    sdf: LOCKED
+  }
+
+}

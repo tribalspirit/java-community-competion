@@ -17,6 +17,10 @@ class TaskDetails extends React.Component {
 
     }
     
+    shouldComponentUpdate(nextProps, nextState) {
+        return (task && task.id !== nextProps.taskId) || (this.state.taskStatus.testsPassed !== nextState.taskStatus.testsPassed)
+    }
+
     componentWillReceiveProps(nextProps){
         if (!nextProps.taskId) return
         const { task } = this.state
@@ -28,6 +32,7 @@ class TaskDetails extends React.Component {
             .then(task => this.setState({task, taskStatus}))
             .catch(e => console.log(e))
     }
+    
     _showTaskStatus = (taskStatus) => {
         this.setState({taskStatus})
     }

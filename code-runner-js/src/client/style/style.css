@@ -23,6 +23,15 @@ hr {
   overflow: auto;
 }
 
+.dashboard-container {
+  width: 100vw !important;
+  min-height: 100vh !important;
+  position: absolute;
+  left: 0%;
+  padding: 20px;
+  background-color: #DDF8E8 !important;
+}
+
 .failed-input {
   margin: 15px;
   width: 300px;

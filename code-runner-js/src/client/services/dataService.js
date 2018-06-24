@@ -1,5 +1,6 @@
 import showdown from 'showdown';
 import axios from 'axios';
+import { dashboard } from './mock'
 
 const converter = new showdown.Converter();
 
@@ -16,7 +17,12 @@ const fetchTasksListForUser = () => axios.get('/api/tasks')
   .then(res => res.data)
   .catch(e => console.log(e));
 
+const fetchDashboardData = () => {
+  return dashboard 
+}
+
 export {
   fetchTaskData,
   fetchTasksListForUser,
+  fetchDashboardData
 };
