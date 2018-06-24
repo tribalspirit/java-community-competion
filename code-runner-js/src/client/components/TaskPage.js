@@ -18,7 +18,8 @@ class TaskDetails extends React.Component {
     }
     
     shouldComponentUpdate(nextProps, nextState) {
-        return (task && task.id !== nextProps.taskId) || (this.state.taskStatus.testsPassed !== nextState.taskStatus.testsPassed)
+        const { task, taskStatus } = this.state
+        return ((task && task.id) !== nextState.task.id) || ((task && task.status) !== nextState.task.status) || ((taskStatus && taskStatus.testsPassed) !== nextState.taskStatus.testsPassed)
     }
 
     componentWillReceiveProps(nextProps){
@@ -32,7 +33,7 @@ class TaskDetails extends React.Component {
             .then(task => this.setState({task, taskStatus}))
             .catch(e => console.log(e))
     }
-    
+
     _showTaskStatus = (taskStatus) => {
         this.setState({taskStatus})
     }
