@@ -26,10 +26,10 @@ router.get('/tasks/:taskId', isAuthenticated, (req, res) => {
 
 mapToTaskOnUI = (taskFromRedis) => {
   const {
-    id, title, shortDesc, longDesc, testExamples,
+    id, title, shortDesc, longDesc, status
   } = taskFromRedis;
   return {
-    id, title, shortDesc, longDesc, testExamples,
+    id, title, shortDesc, longDesc, status
   };
 };
 

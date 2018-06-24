@@ -1,6 +1,17 @@
 const taskList = require('./mock');
 
-const getUserTasks = userId => getAllTasks().slice(0, 1);
+const getUserTasks = userId => {
+  const allTasks = getAllTasks();
+  const userTasksStatuses = {
+    "ts1": "SOLVED",
+      "ts2": "UNLOCKED",
+      "ts3": "LOCKED"
+  }
+  return allTasks.map(task => {
+    task.status = userTasksStatuses[task.id]
+      return task;
+  });
+};
 
 const getAllTasks = () => taskList;
 
