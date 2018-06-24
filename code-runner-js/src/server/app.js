@@ -14,6 +14,8 @@ const isAuthenticated = require('./auth/isAuthenticated');
 const tasksApi = require('./routes/tasks');
 const solutionApi = require('./routes/solution');
 
+const { initUserInRedis } = require('./services/dataService');
+
 
 app.use(fileUpload());
 
@@ -40,6 +42,7 @@ app.post('/api/login', (req, res) => {
     console.log(req.session);
     req.session.save();
     res.send(`Authenticated as ${req.body.email}`);
+      initUserInRedis(req.body.email);
   } else {
     console.log('No email provided');
   }

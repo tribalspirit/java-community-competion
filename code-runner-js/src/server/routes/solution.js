@@ -15,9 +15,15 @@ router.post('/solution/:taskId', isAuthenticate, (req, res) => {
   const userId = req.session.userId;
 
   console.log(`User ${userId} submitted code: ${source}`);
-  const status = checkSubmission(taskId, userId, source, sourceFile.name.endsWith('.java') ? 'java' : 'js');
+  checkSubmission(taskId, userId, source, sourceFile.name.endsWith('.java') ? 'java' : 'js')
+      .then(status => {
+        console.log(`Status for user ${userId} and task ${taskId}: ${status}`)
+        res.send(status);
+      })
+      .catch(e => {
+        res.status(500).send(e.message)
+      })
 
-  res.send(status);
 });
 
 module.exports = router;

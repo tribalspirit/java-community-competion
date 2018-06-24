@@ -7,29 +7,37 @@ const isAuthenticated = require('../auth/isAuthenticated');
 
 router.get('/tasks', isAuthenticated, (req, res) => {
   const taskList = getUserTasks(req.session.userId);
-  const tasks = taskList.map(task => mapToTaskOnUI(task));
-  console.log(`returning list of tasks id to user ${req.session.userId}: ${tasks.map(task => task.id)}`);
-  res.send(tasks);
+  taskList
+      .then(tasks => {
+          const tasksUI = tasks.map(task => mapToTaskOnUI(task));
+          console.log(`returning list of tasks id to user ${req.session.userId}: ${tasksUI.map(task => task.id)}`);
+          res.send(tasksUI);
+      })
+      .catch(e => console.log(e));
 });
 
 router.get('/tasks/:taskId', isAuthenticated, (req, res) => {
   const taskList = getUserTasks(req.session.userId);
-  const task = taskList.filter(task => task.id == req.params.taskId).map(task => mapToTaskOnUI(task));
+  taskList
+      .then(tasks => {
+          const task = tasks.filter(task => task.id == req.params.taskId).map(task => mapToTaskOnUI(task));
 
-  if (task.length > 0) {
-    res.send(task[0]);
-  } else {
-    res.status(404).send(`task with id ${req.params.taskId} not found`);
-  }
+          if (task.length > 0) {
+              res.send(task[0]);
+          } else {
+              res.status(404).send(`task with id ${req.params.taskId} not found`);
+          }
+      })
+      .catch(e => console.log(e));
 });
 
 
 mapToTaskOnUI = (taskFromRedis) => {
   const {
-    id, title, shortDesc, longDesc, testExamples,
+    id, title, shortDesc, longDesc, status
   } = taskFromRedis;
   return {
-    id, title, shortDesc, longDesc, testExamples,
+    id, title, shortDesc, longDesc, status
   };
 };
 
