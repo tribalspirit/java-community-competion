@@ -36,10 +36,10 @@ class SourceCodeGuard {
     }
 
     private static List<String> readBlacklist() {
-        final Path path = Paths.get(Resources.getResource("source-keywords-blacklist").getPath());
         try {
+            final Path path = Paths.get(Resources.getResource("source-keywords-blacklist").toURI());
             return Files.readAllLines(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

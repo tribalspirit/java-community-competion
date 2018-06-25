@@ -27,6 +27,11 @@ module.exports = (taskId, userId, source, language) => {
                     console.log('Result from java:', response.data);
 
 
+                    if(response.data.errorType){
+                        return {
+                            error: response.data.errorType + "; " + response.data.errorMsg
+                        }
+                    }
 
                     const testStatuses = response.data.testsStatuses;
 

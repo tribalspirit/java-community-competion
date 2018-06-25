@@ -142,7 +142,7 @@ const getDashboardState = () => Promise.all([getUserIds(), getTaskIds()])
                     return asyncGet(`submission:${userId}:${taskId}`)
                         .then(reportStr => {
                             if (reportStr) {
-                                console.log(`User ${userId} has submitted solution for task ${taskId}: ${reportStr}`);
+                                // console.log(`User ${userId} has submitted solution for task ${taskId}: ${reportStr}`);
                                 let report = JSON.parse(reportStr);
                                 if (report.totalTestCount) {
                                     dashboardReport[userId][taskId] = (report.testsPassed / report.totalTestCount) * 100;
@@ -154,10 +154,10 @@ const getDashboardState = () => Promise.all([getUserIds(), getTaskIds()])
                                 return asyncHGetAll(`status:${userId}`)
                                     .then(taskUnlockingStatus => {
                                         if (taskUnlockingStatus[taskId] === 'LOCKED') {
-                                            console.log(`User ${userId} has not unlocked the task ${taskId}`);
+                                            // console.log(`User ${userId} has not unlocked the task ${taskId}`);
                                             dashboardReport[userId][taskId] = 'LOCKED'
                                         } else {
-                                            console.log(`User ${userId} has unlocked the task ${taskId} but did not submit anything yet`);
+                                            // console.log(`User ${userId} has unlocked the task ${taskId} but did not submit anything yet`);
                                             dashboardReport[userId][taskId] = 0;
                                         }
                                         return dashboardReport;

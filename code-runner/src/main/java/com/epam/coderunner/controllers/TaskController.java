@@ -24,6 +24,10 @@ final class TaskController {
     @ResponseBody
     public Mono<String> handleFileUpload(@RequestBody final TaskRequest request) {
         LOG.info("Received task request, taskId={}, userId={}", request.getTaskId(), request.getUserId());
-        return runner.run(request).map(TestingStatus::toJson);
+        try {
+            return runner.run(request).map(TestingStatus::toJson);
+        } catch(Throwable th){
+            return Mono.just(TestingStatus.error(th).toJson());
+        }
     }
 }
