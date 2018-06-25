@@ -5,7 +5,7 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
     const {totalTestCount, testsPassed, firstFailedInput, error} = taskStatus
     const solved = totalTestCount === testsPassed
     const solvedPercentage = solved ? 100 : Math.round(100 * testsPassed / totalTestCount)
-    solved && onSolvedFn()
+    !error && solved && onSolvedFn()
     
     const _errorMessage = (error) => {
         return error ? <div className='row'>
@@ -48,7 +48,7 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
             <div className='status row'>
                 <div className="col-lg-12">
                     {error && _errorMessage(error)}
-                    {!error && solved ? _successMessage() : _failedMessage(firstFailedInput)}
+                    {!error && (solved ? _successMessage() : _failedMessage(firstFailedInput))}
                     {!error && <h3>Current progress</h3>}
                     {!error && <h4>Solved {testsPassed} of {totalTestCount}</h4>}
                     {!error && <div className='progress'>
