@@ -10,8 +10,8 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
     const _errorMessage = (error) => {
         return error ? <div className='row'>
             <div className='row'>
-                <h4>Oops, something went wrong</h4>
-                <h4>Error message:</h4>
+                <h4>Oops, something went wrong</h4><br/>
+                <h5>Error message:</h5><br/>
             </div>
             <div className='row'>
                 <div className="card failed-input">
@@ -32,8 +32,8 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
     const _failedMessage = (msg) => (
         <div className='status'>
             <div className='row'>
-                <h4>One or more tests failed. Please, revise your code and resubmit</h4>
-                <h4>First failed test input:</h4>
+                <h4>One or more tests failed. Please, revise your code and resubmit</h4><br/>
+                <h5>First failed test input:</h5><br/>
             </div>
             <div className='row'>
                 <div className="card failed-input">

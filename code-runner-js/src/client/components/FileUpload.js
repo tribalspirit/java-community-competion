@@ -7,9 +7,9 @@ export default class extends React.Component {
     file: null,
   }
 
-  onFormSubmit = (e) => {
-    this.fileUpload(this.state.file).then((response) => {
-      console.log(response.data);
+  onFormSubmit = (file) => {
+    this.fileUpload(file).then((response) => {
+      console.log(response.data)
       this.props.onSubmitFn(response.data)
     });
   }
@@ -21,7 +21,7 @@ export default class extends React.Component {
   fileUpload = (file) => {
     const url = `/api/solution/${this.props.taskId}`;
     const formData = new FormData()
-    formData.append('source', file)
+    formData.append('source', file[0])
     const config = {
       headers: {
         'content-type': 'multipart/form-data',
@@ -36,8 +36,8 @@ export default class extends React.Component {
         <div className='col-lg-12'>
           <h3>File Upload</h3>
             <div className="dropzone">
-            <Dropzone onDrop={this.fileUpload}>
-              <p>Try dropping some files here, or click to select files to upload.</p>
+            <Dropzone onDrop={this.onFormSubmit} className='drop-box'>
+              <h5>Try dropping a file here, or click to select file to upload.</h5>
             </Dropzone>
           </div>
         </div>
