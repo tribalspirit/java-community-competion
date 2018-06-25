@@ -2,11 +2,27 @@ import React from 'react';
 
 
 const TaskStatus = ({taskStatus, onSolvedFn}) => {
-    const {totalTestCount, testsPassed, firstFailedInput} = taskStatus
+    const {totalTestCount, testsPassed, firstFailedInput, error} = taskStatus
     const solved = totalTestCount === testsPassed
     const solvedPercentage = solved ? 100 : Math.round(100 * testsPassed / totalTestCount)
     solved && onSolvedFn()
     
+    const _errorMessage = (error) => {
+        return error ? <div className='row'>
+            <div className='row'>
+                <h4>Oops, something went wrong</h4>
+                <h4>Error message:</h4>
+            </div>
+            <div className='row'>
+                <div className="card failed-input">
+                    <div className="card-body">
+                        {error}
+                    </div>
+                </div>  
+            </div>
+        </div> : null
+    }
+
     const _successMessage = () => (
         <div className='row'>
             <h2>Conguratulations!</h2>
@@ -31,13 +47,14 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
         return (
             <div className='status row'>
                 <div className="col-lg-12">
-                    {solved ? _successMessage() : _failedMessage(firstFailedInput)}
-                    <h3>Current progress</h3>
-                    <h4>Solved {testsPassed} of {totalTestCount}</h4>
-                    <div className='progress'>
+                    {error && _errorMessage(error)}
+                    {!error && solved ? _successMessage() : _failedMessage(firstFailedInput)}
+                    {!error && <h3>Current progress</h3>}
+                    {!error && <h4>Solved {testsPassed} of {totalTestCount}</h4>}
+                    {!error && <div className='progress'>
                         <div className='progress-bar bg-success' role='progressbar' style={{width: `${solvedPercentage}%`}} aria-valuenow={solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
                         <div className='progress-bar bg-danger' role='progressbar' style={{width: `${100 - solvedPercentage}%`}} aria-valuenow={100 - solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+                    </div>}
                 </div>
             </div>)
 }
