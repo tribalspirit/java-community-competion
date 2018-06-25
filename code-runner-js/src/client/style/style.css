@@ -42,6 +42,10 @@ hr {
   height: 15vh;
 }
 
+.name-col {
+  width: 10%;
+}
+
 .task-item {
     background: #14248A;
     width: 100px;
@@ -51,8 +55,6 @@ hr {
     vertical-align: middle;
     line-height: 100px;
     cursor: pointer;
-
-
 }
 
 .task-item:hover {

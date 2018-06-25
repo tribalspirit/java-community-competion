@@ -27,15 +27,18 @@ export default class extends Component {
 
   _fetchData = () => {
     const results = fetchDashboardData()
-    this.setState({results}, this._poll)
+    results.then(results => {
+      this.setState({results}, this._poll)
+    })
+      .catch(e => console.log(e))
   }
 
   _renderProgressBar = (percent) => {
     if (percent === 'LOCKED') return (<span>X</span>)
     return (
       <div className='progress'>
-        <div className='progress-bar bg-success' role='progressbar' style={{width: `${percent}%`}} aria-valuenow={solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
-        <div className='progress-bar bg-danger' role='progressbar' style={{width: `${100 - percent}%`}} aria-valuenow={100 - solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
+        <div className='progress-bar bg-success' role='progressbar' style={{width: `${percent}%`}} aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100"></div>
+        <div className='progress-bar bg-danger' role='progressbar' style={{width: `${100 - percent}%`}} aria-valuenow={100 - percent} aria-valuemin="0" aria-valuemax="100"></div>
       </div>
     )
   }
@@ -46,20 +49,20 @@ export default class extends Component {
     const users = results ? Object.keys(results) : []
 
     return (
-      <div class='dashboard-container'>
+      <div className='dashboard-container'>
           <h1>Dashboard</h1>
-          <table className="table">
-            <thead>
+          <table className="table table-striped">
+            <thead className=''>
               <tr>
-                <th scope="col">#</th>
-                {taskIds.map( id => (<th scope="col">{id}</th>))}
+                <th className='name-col' scope="col">#</th>
+                {taskIds.map((id, i) => (<th key={`col-${id}-${i}`} scope="col">{id}</th>))}
               </tr>
             </thead>
             <tbody>
               { results && users.map(user => (
-                <tr>
+                <tr key={user}>
                   <th scope="row">{user}</th>
-                    {taskIds.map(id => (<td>{this._renderProgressBar(results[user][id])}</td>))}
+                    {taskIds.map((id, i) => (<td key={`row-${id}-${i}`}>{this._renderProgressBar(results[user][id])}</td>))}
                 </tr>
               ))}
             </tbody>
