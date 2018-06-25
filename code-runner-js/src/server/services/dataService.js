@@ -113,7 +113,7 @@ const markTaskAsDoneAndUnlockNextTaskForUser = (userId, currentTaskId) => {
 };
 
 const saveSubmissionInfo = (userId, taskId, result) => {
-    result.timestamp = new Date().getTime();
+    result.timestamp = new Date().toLocaleString();
     asyncGet(`submission:${userId}:${taskId}`)
         .then(currentResultStr => {
             if(!currentResultStr){
