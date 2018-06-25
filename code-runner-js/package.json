@@ -54,6 +54,7 @@
     "mock-require": "^3.0.2",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-dropzone": "^4.2.11",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "redis": "^2.8.0",
