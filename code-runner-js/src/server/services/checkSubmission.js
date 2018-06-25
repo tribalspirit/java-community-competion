@@ -1,5 +1,6 @@
 const requireFromString = require('require-from-string');
-const { getUserTasks, markTaskAsDoneAndUnlockNextTaskForUser } = require('./dataService');
+const axios = require('axios');
+const { getUserTasks, markTaskAsDoneAndUnlockNextTaskForUser, saveSubmissionInfo } = require('./dataService');
 
 
 const REQUIRED_PASS_PERCENT = 100;
@@ -15,42 +16,77 @@ module.exports = (taskId, userId, source, language) => {
               };
           }
 
-          let result;
+          let result = {};
           if (language === 'java') {
               console.log(`Provided java code for taskId ${taskId}`);
-              console.log(JSON.stringify({ source: sourceFile.data.toString('utf8') }));
+              console.log(`Source: ${source}`);
 
-              try {
-                  result = axios.post(`http://localhost:8090/task/${taskId}`, { source: sourceFile.data.toString('utf8') });
-              } catch (e) {
-                  console.log(e);
-                  return {
-                      error: e.message,
-                  };
-              }
+              return axios.post(`http://localhost:8090/task/submit`, { source,
+              userId, taskId})
+                  .then(response => {
+                    console.log('Result from java:', response.data);
+
+
+
+                    const testStatuses = response.data.testsStatuses;
+
+                      result.totalTestCount = testStatuses.length;
+                      result.testsPassed = 0;
+                      testStatuses.forEach(status => {
+                        if(status === 'PASS'){
+                            result.testsPassed += 1;
+                        }
+                      });
+
+                      if(response.data.currentFailedInput){
+                        result.firstFailedInput = response.data.currentFailedInput;
+                      }
+
+                      if (result.testsPassed / result.totalTestCount >= REQUIRED_PASS_PERCENT / 100) {
+                          markTaskAsDoneAndUnlockNextTaskForUser(userId, taskId);
+                      }
+                      saveSubmissionInfo(userId, taskId, result);
+                      console.log('Result js:', result);
+                      return result;
+                  })
+                  .catch (e => {
+                    console.log(e);
+                    return {
+                      error: e.message
+                    }
+                  })
           } else {
-              const functionToTest = requireFromString(source);
-              result = {
-                  totalTestCount: Object.keys(task.acceptanceTests).length,
-                  testsPassed: 0,
+            try {
+                const functionToTest = requireFromString(source);
+                result = {
+                    totalTestCount: Object.keys(task.acceptanceTests).length,
+                    testsPassed: 0,
 
-              };
+                };
 
-              Object.keys(task.acceptanceTests).forEach((input) => {
-                  const expectedOutput = task.acceptanceTests[input];
-                  const actualOutput = functionToTest(input);
-                  if (expectedOutput == actualOutput) {
-                      result.testsPassed += 1;
-                  } else if (!result.firstFailedInput) {
-                      console.log(`Test failed for user ${userId}: expected: ${expectedOutput}, actual: ${actualOutput}`);
-                      result.firstFailedInput = input;
-                  }
-              });
+                Object.keys(task.acceptanceTests).forEach((input) => {
+                    const expectedOutput = task.acceptanceTests[input];
+                    const actualOutput = functionToTest(input);
+                    if (expectedOutput == actualOutput) {
+                        result.testsPassed += 1;
+                    } else if (!result.firstFailedInput) {
+                        console.log(`Test failed for user ${userId}: expected: ${expectedOutput}, actual: ${actualOutput}`);
+                        result.firstFailedInput = input;
+                    }
+                });
+                if (result.testsPassed / result.totalTestCount >= REQUIRED_PASS_PERCENT / 100) {
+                    markTaskAsDoneAndUnlockNextTaskForUser(userId, taskId);
+                }
+                saveSubmissionInfo(userId, taskId, result);
+
+                return result;
+            } catch (e) {
+              console.log(e);
+              return {
+                error: e.message
+              }
+            }
           }
-          if (result.testsPassed / result.totalTestCount >= REQUIRED_PASS_PERCENT / 100) {
-              markTaskAsDoneAndUnlockNextTaskForUser(userId, taskId);
-          }
-          return result;
       })
       .catch(e => console.log(e))
 };

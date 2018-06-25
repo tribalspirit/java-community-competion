@@ -13,6 +13,7 @@ const isAuthenticated = require('./auth/isAuthenticated');
 
 const tasksApi = require('./routes/tasks');
 const solutionApi = require('./routes/solution');
+const dashboardApi = require('./routes/dashboard');
 
 const { initUserInRedis } = require('./services/dataService');
 
@@ -33,7 +34,7 @@ app.use(expressValidator());
 
 app.use('/public', express.static(`${__dirname}./../../dist/public`));
 
-app.use('/api', [tasksApi, solutionApi]);
+app.use('/api', [tasksApi, solutionApi, dashboardApi]);
 
 app.post('/api/login', (req, res) => {
   if (req.body.email) {

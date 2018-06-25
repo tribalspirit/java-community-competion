@@ -4,9 +4,8 @@ const {promisify} = require('util');
 
 const tasks = [
     {
-        id: 'ts1',
-        title: 'ts1',
-        shortDesc: 'ts1',
+        id: '1',
+        title: 'Lift',
         longDesc: "You are visiting a friend in Korea. She lives in a nice, tall building in the city centre. But oh no, she's not home yet! To lift your spirit, you decide to do some lifting. Or maybe elevating. Anyway, you want to ride the elevator up up up and away!\n" +
         "\n" +
         "So, here is how it goes.\n" +
@@ -118,20 +117,23 @@ const tasks = [
         },
     },
     {
-        id: 'ts2',
-        title: 'ts2',
-        shortDesc: 'ts2',
+        id: '2',
+        title: 'Other Task',
         longDesc: 'ts2',
         acceptanceTests: {
+            '1': '1',
+            '1,2,3': '6',
             '1,2,3,4,5,6': '21',
         },
     },
     {
-        id: 'ts3',
-        title: 'ts3',
+        id: '3',
+        title: 'Blah-Blah Task',
         shortDesc: 'ts3',
         longDesc: 'ts3',
         acceptanceTests: {
+            '1': '1',
+            '1,2,3': '6',
             '1,2,3,4,5,6': '21',
         },
     },
@@ -161,7 +163,6 @@ client.keys('*', (err, replies) => {
     client.quit();
 
 });
-
 
 
 
