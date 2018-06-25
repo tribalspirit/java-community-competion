@@ -26,9 +26,9 @@ final class SolutionChecker {
                 final String input = entry.getKey();
                 final String expected = entry.getValue();
                 LOG.debug("{}Start checking.., input[{}], expected[{}]", compiledTask.signature(), input, expected);
-                final String actual = function.apply(input);
+                final String actual = function.apply(input).trim();
                 if (!actual.equals(expected)) {
-                    LOG.trace("{}Failed on test [{}]. Expected: [{}], actual: [{}]", compiledTask.signature(), input, expected, actual);
+                    LOG.debug("{}Failed on test [{}]. Expected: [{}], actual: [{}]", compiledTask.signature(), input, expected, actual);
                     testingStatusBuilder.addStatus(Status.FAIL).setCurrentFailedInputIfAbsent(input);
                     allTestsPassed = false;
                 } else {
