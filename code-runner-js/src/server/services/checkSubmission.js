@@ -70,7 +70,7 @@ module.exports = (taskId, userId, source, language) => {
                 };
 
                 Object.keys(task.acceptanceTests).forEach((input) => {
-                    const expectedOutput = task.acceptanceTests[input];
+                    const expectedOutput = task.acceptanceTests[input].trim();
                     const actualOutput = functionToTest(input).trim();
                     if (expectedOutput === actualOutput) {
                         result.testsPassed += 1;

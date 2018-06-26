@@ -1,23 +1,45 @@
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class Solution22 implements Function<String, String> {
-    @Override
+
     public String apply(String s) {
-        String o = "", x = "", r = "", wP[] = {"123", "456", "789", "147", "258", "369", "159", "357"};
-        for (int i = 0; i < s.length() && "".equals(r); i++) {
-            if (i % 2 == 0) {
-                o += s.charAt(i);
-                if (c(o, wP)) r = "O";
-            } else {
-                x += s.charAt(i);
-                if (c(x, wP)) r = "X";
+        int L = 2, I = 0, C = 0;
+        boolean B = false;
+        for (String G : s.split(" ")) {
+            if ("".equals(G)) {
+                continue;
+            }
+            if (("piranha".equals(G) || "goomba".equals(G) || "koopa".equals(G)) && I == 0) {
+                if (B) {
+                    B = false;
+                } else {
+                    L--;
+                }
+            }
+            if ("1Up".equals(G)) {
+                L++;
+            }
+            if ("Mushroom".equals(G)) {
+                B = true;
+            }
+            if ("Star".equals(G)) {
+                I = 3;
+            }
+            if ("Princess".equals(G) || "Bowser".equals(G)) {
+                return "WIN";
+            }
+            try {
+                C += Integer.parseInt(G);
+            } catch (Exception e) {
+            }
+            L += C / 100;
+            C %= 100;
+            I = Math.max(0, I - 1);
+            if (L < 0) {
+                return "GAME OVER";
             }
         }
-        return "".equals(r) ? "?" : r;
+        return "???";
     }
 
-    static boolean c(String o, String[] x) {
-        return Stream.of(x).anyMatch(s -> s.matches("^[" + o + "]*$"));
-    }
 }

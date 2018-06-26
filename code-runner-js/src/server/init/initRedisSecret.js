@@ -1,16 +1,19 @@
 const redis = require('redis');
-const {promisify} = require('util');
+
+const freqOrder = require('./freqOrder');
+freqOrder.id = '1';
 
 const marioTask = require('./mario');
-marioTask.id = '1';
+marioTask.id = '2';
 
 const tickTackToe = require('./ticTakToe');
-tickTackToe.id = '2';
+tickTackToe.id = '3';
 
 const domino = require('./domino');
-domino.id = '3'
+domino.id = '4';
 
 const tasks = [
+    freqOrder,
     marioTask,
     tickTackToe,
     domino

@@ -24,7 +24,7 @@ final class SolutionChecker {
             boolean allTestsPassed = true;
             for (final Map.Entry<String, String> entry : inputOutputs.entrySet()) {
                 final String input = entry.getKey();
-                final String expected = entry.getValue();
+                final String expected = entry.getValue().trim();
                 LOG.debug("{}Start checking.., input[{}], expected[{}]", compiledTask.signature(), input, expected);
                 final String actual = function.apply(input).trim();
                 if (!actual.equals(expected)) {
