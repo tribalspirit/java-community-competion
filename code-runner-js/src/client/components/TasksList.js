@@ -35,11 +35,9 @@ export default class extends Component {
             />)
         return (
             <div>
-                <div className="row header">
-                    <div className="col-lg-12">
-                        <h2>Treasure hunt</h2>
-                        <div><Link to="/dashboard">Dashboard</Link></div>
-                    </div>
+                <div className="header">
+                        <h2 className='header-title shadow'>Treasure hunt</h2>
+                        <div className='btn dash-link'><Link to="/dashboard">Hall of Fame</Link></div>
                 </div>
                 <hr/>
                 <div className="row">

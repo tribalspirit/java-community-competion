@@ -50,7 +50,7 @@ export default class extends Component {
 
     return (
       <div className='dashboard-container'>
-          <h1>Dashboard</h1>
+          <h1>Hall of Fame</h1>
           <table className="table table-striped">
             <thead className=''>
               <tr>

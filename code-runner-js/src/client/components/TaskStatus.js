@@ -10,15 +10,9 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
     const _errorMessage = (error) => {
         return error ? <div className='row'>
             <div className='row'>
-                <h4>Oops, something went wrong</h4><br/>
-                <h5>Error message:</h5><br/>
-            </div>
-            <div className='row'>
-                <div className="card failed-input">
-                    <div className="card-body">
-                        {error}
-                    </div>
-                </div>  
+                <h4>Arrrrgh!!! There'a bottle with an error message inside:</h4><br/>
+                <br/>
+                <pre>{error}</pre>
             </div>
         </div> : null
     }
@@ -32,15 +26,7 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
     const _failedMessage = (msg) => (
         <div className='status'>
             <div className='row'>
-                <h4>One or more tests failed. Please, revise your code and resubmit</h4><br/>
-                <h5>First failed test input:</h5><br/>
-            </div>
-            <div className='row'>
-                <div className="card failed-input">
-                    <div className="card-body">
-                        {msg}
-                    </div>
-                </div>  
+                <h4>One or more tests failed. Please, revise your code and try again</h4><br/>
             </div>
         </div>)
         
@@ -50,7 +36,7 @@ const TaskStatus = ({taskStatus, onSolvedFn}) => {
                     {error && _errorMessage(error)}
                     {!error && (solved ? _successMessage() : _failedMessage(firstFailedInput))}
                     {!error && <h3>Current progress</h3>}
-                    {!error && <h4>Solved {testsPassed} of {totalTestCount}</h4>}
+                    {!error && <h4>Passed {testsPassed} of {totalTestCount} locks</h4>}
                     {!error && <div className='progress'>
                         <div className='progress-bar bg-success' role='progressbar' style={{width: `${solvedPercentage}%`}} aria-valuenow={solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>
                         <div className='progress-bar bg-danger' role='progressbar' style={{width: `${100 - solvedPercentage}%`}} aria-valuenow={100 - solvedPercentage} aria-valuemin="0" aria-valuemax="100"></div>

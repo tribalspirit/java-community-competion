@@ -34,18 +34,16 @@ export default class extends Component {
         }
         return (
             <div className="login-container">
-                <div className="row header">
-                    <div className="col-lg-12">
-                        <h2>Treasure hunt</h2>
-                    </div>
+                <div className="header">
+                    <h2 className='header-title shadow'>Treasure hunt</h2>
                 </div>
                 <hr/>
-                <div className="row">
+                <div className="row text-center">
                     <div className="col-lg-12">
-                        <h4>Enter your EPAM email:</h4>
+                        <h3>Enter your EPAM email:</h3>
                     </div>
                 </div>
-                <div className="row">
+                <div className="row text-center">
                     <div className="col-lg-6">
                         <input 
                             type="email"

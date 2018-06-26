@@ -32,7 +32,7 @@ export default class extends React.Component {
 
   render() {
     return (
-      <div className='form-upload row'>
+      <div className='row'>
         <div className='col-lg-12'>
           <h3>File Upload</h3>
             <div className="dropzone">

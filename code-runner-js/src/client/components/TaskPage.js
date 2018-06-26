@@ -19,7 +19,7 @@ class TaskDetails extends React.Component {
     
     shouldComponentUpdate(nextProps, nextState) {
         const { task, taskStatus } = this.state
-        return ((task && task.id) !== nextState.task.id) || ((task && task.status) !== nextState.task.status) || ((taskStatus && taskStatus.testsPassed) !== nextState.taskStatus.testsPassed)
+        return ((task && task.id) !== nextState.task.id) || ((task && task.status) !== nextState.task.status) || ((taskStatus && taskStatus.testsPassed) !== (nextState.taskStatus && nextState.taskStatus.testsPassed))
     }
 
     componentWillReceiveProps(nextProps){
