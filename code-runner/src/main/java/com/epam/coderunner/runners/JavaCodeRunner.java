@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,12 +41,11 @@ final class JavaCodeRunner implements CodeRunner {
         final String signature = taskRequest.signature();
         LOG.debug("{}Begin to compile task source, source:\n{}", signature, sourceCode);
         final CompiledTask compiledTask;
-        final Task task = checkNotNull(taskStorage.getTask(taskId), "No task[id:%s] found", taskId);
-
         try {
+            final Task task = checkNotNull(taskStorage.getTask(taskId), "No task[id:%s] found", taskId);
             final SourceCode checkedSource = sourceCodeGuard.proguard(sourceCode);
-            final Function<String, String> function = codeCompiler.compile(checkedSource);
-            compiledTask = new CompiledTask(userId, taskId, task.getAcceptanceTests(), function);
+            final Supplier<Function<String, String>> functionSupplier = codeCompiler.compile(checkedSource);
+            compiledTask = new CompiledTask(userId, taskId, task.getAcceptanceTests(), functionSupplier);
         } catch (final Exception e) {
             LOG.error("{}Error while preparing task:", signature, e);
             return Mono.just(TestingStatus.error(e));

@@ -1,8 +1,10 @@
 package com.epam.coderunner;
 
 import com.epam.coderunner.model.Task;
+import com.epam.coderunner.model.TaskRequest;
 import com.epam.coderunner.model.TestingStatus;
 import com.epam.coderunner.storage.TaskStorage;
+import com.epam.coderunner.support.InternalUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.junit.AfterClass;
@@ -22,6 +24,7 @@ import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -48,15 +51,14 @@ public class CodeRunnerApplicationTests {
     @Before
     public void setup() {
         for (int i = 0; i < 5; i++) {
-            if (taskStorage.getTask(i) == null) {
-                final Map<String, String> inOut = ImmutableMap.of(
-                        "1", "1",
-                        "21", "21"
-                );
-                final Task task = new Task();
-                task.setAcceptanceTests(inOut);
-                taskStorage.saveTask(i, task);
-            }
+            final Map<String, String> inOut = ImmutableMap.of(
+                    "1,2,3", "6",
+                    "21", "21",
+                    "1,4", "3"
+            );
+            final Task task = new Task();
+            task.setAcceptanceTests(inOut);
+            taskStorage.saveTask(i, task);
         }
     }
 
@@ -76,7 +78,7 @@ public class CodeRunnerApplicationTests {
         LOG.info("Response specs:{}", response);
         final TestingStatus testingStatus = TestingStatus.fromJson(response);
 
-        assertThat(testingStatus.getTestsStatuses()).containsExactly(FAIL, PASS);
+        assertThat(testingStatus.getTestsStatuses()).containsExactly(PASS, PASS, FAIL);
     }
 
     @Test
@@ -96,24 +98,32 @@ public class CodeRunnerApplicationTests {
 
     @Test
     public void longRunningTaskPressureTesting() {
-        final List<Future<Flux<String>>> futures = new ArrayList<>(20);
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        final Map<Long, Future<String>> futures = new HashMap<>(20);
         for (int i = 0; i < 20; i++) {
-            futures.add(
+            final TaskRequest request = TestData.readTaskFromResources(random.nextInt(1, 3));
+            futures.put(
+                    request.getTaskId(),
                     executor.submit(() -> webTestClient
                             .post().uri("task/submit")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .body(BodyInserters.fromObject(InternalUtils.toJson(TestData.readTaskFromResources(2))))
-                            .exchange()
-                            .returnResult(String.class).getResponseBody()
+                            .body(BodyInserters.fromObject(InternalUtils.toJson(request)))
+                            .exchange().expectStatus().is2xxSuccessful()
+                            .expectBody(String.class).returnResult().getResponseBody()
                     )
             );
         }
         LOG.debug("All requests fired!");
-        futures.forEach(f -> {
+        futures.forEach((index, future) -> {
             try {
-                final String response = f.get().blockFirst(Duration.ofSeconds(3));
+                final String response = future.get();
+                LOG.debug("Response:{}", response);
                 final TestingStatus testingStatus = TestingStatus.fromJson(response);
-                assertThat(testingStatus.getErrorType()).isEqualTo(TimeoutException.class.getName());
+                if (index == 2) {
+                    assertThat(testingStatus.getErrorType()).isEqualTo(TimeoutException.class.getName());
+                } else if (index == 1) {
+                    assertThat(testingStatus.getErrorType()).isNullOrEmpty();
+                }
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
