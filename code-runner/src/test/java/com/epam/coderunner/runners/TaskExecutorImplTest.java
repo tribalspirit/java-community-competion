@@ -59,12 +59,28 @@ public final class TaskExecutorImplTest {
 
     @Rule public ExpectedException thrown = ExpectedException.none();
     @Test
-    public void throwStackOverflowError() {
+    public void throwStackOverflowError_fatalErrorWillFailWorker() {
         final Callable<TestingStatus> task = this::infiniteRecursion;
-        thrown.expectMessage("TimeoutException");
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Timeout");
         taskExecutor.submit(task).block(Duration.ofSeconds(2));
     }
     private TestingStatus infiniteRecursion() {
         return infiniteRecursion();
+    }
+
+    @Test
+    public void throwNoClassDefFoundError_fatalErrorWillFailWorker() {
+        final Callable<TestingStatus> task = () -> {throw new NoClassDefFoundError();};
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Timeout");
+        taskExecutor.submit(task).block(Duration.ofSeconds(2));
+    }
+
+    @Test
+    public void throwNonFatalExceptionWillPropagateThrough() {
+        final Callable<TestingStatus> task = () -> {throw new IllegalStateException();};
+        thrown.expect(IllegalStateException.class);
+        taskExecutor.submit(task).block(Duration.ofSeconds(2));
     }
 }
