@@ -2,43 +2,26 @@ package com.epam.coderunner.runners;
 
 import com.epam.coderunner.model.Status;
 import com.epam.coderunner.model.TestingStatus;
-import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
-import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class TaskExecutorImplTest {
     private static final Logger LOG = LoggerFactory.getLogger(TaskExecutorImplTest.class);
 
-    private static final AtomicInteger counter = new AtomicInteger();
-    private final Queue<Scheduler> schedulerWatched = new ConcurrentLinkedQueue<>();
-    private final TaskExecutor taskExecutor = new TaskExecutorImpl(() -> {
-        final Scheduler scheduler = Schedulers.newSingle("test-exec" + counter.getAndIncrement());
-        schedulerWatched.offer(scheduler);
-        return scheduler;
-    });
+    private final TaskExecutor taskExecutor = new TaskExecutorImpl(100);
 
     @After
     public void checkSchedulers(){
-        schedulerWatched.forEach(scheduler -> {
-            Awaitility.waitAtMost(3, TimeUnit.SECONDS).until(scheduler::isDisposed);
-            LOG.debug("Scheduler[{}] has been successfully disposed", scheduler);
-        });
         System.out.println("------------------------------");
     }
 
