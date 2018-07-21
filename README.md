@@ -80,3 +80,35 @@ For testing you can submit code from code-runner-java/src/test/resources/Solutio
 ## Solutions 
 The working solution for competition tasks available in code-runner-java/src/test/java/Solution(11-44).java
 
+## Determine the winner
+
+The overall status of all participants can be see in Hall Of Fame: 
+http://localhost:5000/dashboard
+
+In case if several participant solved same number of test cases, you can check in redis who solved it first: 
+```
+get submission:{userId}:{taskId} 
+```
+will return you the latest successful submission with a timestamp. 
+
+This submission information is updated only when users solves more test cases than the previous submission. 
+In result we can see here the earliest time when user solve this amount tests. And user can submit any bad solution without worrying about overriding this result. 
+
+## The problems during the competiton
+
+### First failed input problem
+
+Many participants struggled with not being able to see the failed test input. Particularly, when input is not valid, as in Mario task:
+```
+'Star Mushroom Mushroom invalid piranha piranha goomba': '???',
+```
+
+Although we don't show it in UI, the first failed input can be returned by api call, so participants can see it in dev tools. 
+
+It's a tricky question should show the failed input to the participant - if we don't, the participants are frustrated, 
+if we do show, then participant can just hardcode the solution for this particular case and see the next failed input and so on. 
+
+In any case, failures for java and js submissions can be seen in code-runner-js logs:
+```
+Status for user 123@123 and task 1: {"totalTestCount":3,"testsPassed":1,"firstFailedInput":"1,2,3","timestamp":"2018-7-21 13:34:02"}
+```

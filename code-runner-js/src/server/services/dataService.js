@@ -20,7 +20,7 @@ let asyncHGetAll = promisify(client.hgetall).bind(client);
 const getTaskIds = () => {
     return asyncLrange('taskIds', 0, -1)
         .then(ids => {
-            console.log('Tasks ids:', ids);
+            // console.log('Tasks ids:', ids);
             return ids;
         })
         .catch(e => console.log(e));
@@ -47,14 +47,13 @@ const getAllTasks = () => {
 
 const initUserInRedis = (userId) => {
     const users = client.smembers('userIds', (err, replies) => {
-        console.log(replies);
         if(replies.length > 0 && replies.includes(userId)){
             console.log(`User ${userId} already exists`);
         } else {
             client.sadd('userIds', userId);
+            console.log(`Created new user ${userId} in redis`);
             const taskIds = getTaskIds();
             taskIds.then(ids => {
-                console.log(ids);
                 client.hset(`status:${userId}`, ids[0], "UNLOCKED");
                 for(let i=1;i<ids.length;i++){
                     client.hset(`status:${userId}`, ids[i], "LOCKED")
@@ -82,7 +81,7 @@ const getUserTasks = userId => {
   const userTasksStatusesPromise = getUserTaskStatuses(userId);
   return Promise.all([allTasksPromise, userTasksStatusesPromise])
       .then((results) => {
-          console.log('Results:', results);
+          // console.log('Results:', results);
           let allTasks = results[0];
           let userTasksStatuses = results[1];
           let enrichedTasks = allTasks.map(task => {
@@ -90,7 +89,7 @@ const getUserTasks = userId => {
               taskObj.status = userTasksStatuses[taskObj.id];
               return taskObj;
           });
-          console.log('Enriched tasks: ', enrichedTasks);
+          // console.log('Enriched tasks: ', enrichedTasks);
           return enrichedTasks;
       })
       .catch(e => console.log(e))

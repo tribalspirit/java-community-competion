@@ -18,13 +18,13 @@ module.exports = (taskId, userId, source, language) => {
 
           let result = {};
           if (language === 'java') {
-              console.log(`Provided java code for taskId ${taskId}`);
-              console.log(`Source: ${source}`);
+              // console.log(`Provided java code for taskId ${taskId}`);
+              // console.log(`Source: ${source}`);
 
               return axios.post(`http://localhost:8090/task/submit`, { source,
               userId, taskId})
                   .then(response => {
-                    console.log('Result from java:', response.data);
+                    // console.log('Result from java:', response.data);
 
 
                     if(response.data.errorType){
@@ -51,7 +51,7 @@ module.exports = (taskId, userId, source, language) => {
                           markTaskAsDoneAndUnlockNextTaskForUser(userId, taskId);
                       }
                       saveSubmissionInfo(userId, taskId, result);
-                      console.log('Result js:', result);
+                      // console.log('Result js:', result);
                       return result;
                   })
                   .catch (e => {

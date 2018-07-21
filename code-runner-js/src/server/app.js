@@ -38,9 +38,8 @@ app.use('/api', [tasksApi, solutionApi, dashboardApi]);
 
 app.post('/api/login', (req, res) => {
   if (req.body.email) {
-    console.log('auth as ', req.body.email);
+    // console.log('auth as ', req.body.email);
     req.session.userId = req.body.email;
-    console.log(req.session);
     req.session.save();
     res.send(`Authenticated as ${req.body.email}`);
       initUserInRedis(req.body.email);
@@ -57,7 +56,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('*', isAuthenticated, (req, res) => {
-  console.log('Returning index html for all');
+  // console.log('Returning index html for all');
   res.sendFile(path.join(`${__dirname}./../../dist/public/index.html`));
 });
 

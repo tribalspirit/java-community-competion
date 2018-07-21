@@ -10,7 +10,7 @@ router.get('/tasks', isAuthenticated, (req, res) => {
   taskList
       .then(tasks => {
           const tasksUI = tasks.map(task => mapToTaskOnUI(task));
-          console.log(`returning list of tasks id to user ${req.session.userId}: ${tasksUI.map(task => task.id)}`);
+          // console.log(`returning list of tasks id to user ${req.session.userId}: ${tasksUI.map(task => task.id)}`);
           res.send(tasksUI);
       })
       .catch(e => console.log(e));

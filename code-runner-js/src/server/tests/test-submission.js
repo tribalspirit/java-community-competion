@@ -1,1 +1,1 @@
-module.exports = input => 1;
+module.exports = input => "1";
